@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { loginFailure, loginStart, loginSuccess } from '../redux/userReducer'; 
 import jwt from 'jwt-decode'
 
-const OuterContainer = styled.div``
+const OuterContainer = styled.div`
+ background-color: #060b26;`
 
 const InnerContainer = styled.div`
   width: 100vw;
@@ -25,7 +26,7 @@ const Wrapper = styled.div`
   align-items: center;
   flex-direction: column;
   display: flex;
-  border-radius: 10px;
+  border-radius: 10px
 `;
 
 const Title = styled.h1`
@@ -42,19 +43,25 @@ const Form = styled.form`
 const Input = styled.input`
   flex: 1;
   min-width: 40%;
-  margin: 10px 0;
+  width:300px;
+  margin: 20px 0;
   padding: 10px;
+  font-size: medium;
 `;
 
 const Button = styled.button`
-  width: 50%;
+  width: 100px;
   border: none;
   padding: 15px 20px;
-  background-color: teal;
+  background-color: #122dc2;
   color: white;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   border-radius:10px;
+
+  &:hover {
+      background-color: #1a83ff;
+    }
 `;
 
 const CheckboxContainer = styled.div`
@@ -64,6 +71,10 @@ const CheckboxContainer = styled.div`
 
 const Checkbox = styled.input.attrs({type: 'checkbox'})`
   
+`
+const ForgotPassword = styled.span`
+    margin-top: 10px;
+    font-size: medium;
 `
 
 const Login = () => {
@@ -99,11 +110,11 @@ const Login = () => {
           <Title>SIGN IN</Title>
           <Form>
             <Input
-              placeholder="username"
+              placeholder="Email"
               onChange={(e) => setUsername(e.target.value)}
               />
             <Input
-              placeholder="password"
+              placeholder="Password"
               type="password"
               onChange={(e) => setPassword(e.target.value)}
               />
@@ -114,6 +125,8 @@ const Login = () => {
               <Checkbox/>
               <span>Keep me logged in</span>
             </CheckboxContainer>
+            <ForgotPassword>Forgot password? Click <Link to={'/forgot_password'}>here</Link>!
+            </ForgotPassword>
           </Form>
         </Wrapper>
       </InnerContainer>
