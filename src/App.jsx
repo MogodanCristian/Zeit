@@ -9,6 +9,8 @@ import {
 } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import { createGlobalStyle }from 'styled-components'
+import { useSelector } from 'react-redux'
+import Login from './pages/Login'
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
@@ -21,13 +23,14 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function App() {
-
+  const user = useSelector((state) => state.user.currentUser);
   return (
     <Router>
       <GlobalStyle/>
-        <Sidebar/>
+        {user && <Sidebar/>}
         <Routes>
-            <Route path='/' element = {<Dashboard/>}/>
+            <Route path='/login' element={<Login/>}/>
+            <Route path='/' element = {user ? <Dashboard/> : <Navigate to={'/login'}/>}/>
         </Routes>
     </Router>
   )
