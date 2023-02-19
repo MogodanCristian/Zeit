@@ -118,7 +118,6 @@ function Sidebar() {
   const handleLogout = () =>{
     if(user){
         dispatch(logout())
-        console.log(user)
     }
 }
 

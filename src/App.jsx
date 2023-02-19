@@ -27,11 +27,29 @@ function App() {
   return (
     <Router>
       <GlobalStyle/>
-        {user && <Sidebar/>}
+      {!user && (
         <Routes>
-            <Route path='/login' element={<Login/>}/>
-            <Route path='/' element = {user ? <Dashboard/> : <Navigate to={'/login'}/>}/>
+          <Route path ='/login' element={<Login/>}/>
+          <Route path='/' element = {<Navigate to={'/login'}/>}/>
+          <Route path='*' element = {<Navigate to={'/login'}/>}/>
         </Routes>
+      )}
+      {user && user.role === 'manager' && (
+        <>
+          <Sidebar/>
+          <Routes>
+            <Route path='/' element = {<Dashboard/>}/>
+          </Routes>
+        </>
+      )}
+      {user && user.role === 'employee' && (
+        <>
+          <Sidebar/>
+          <Routes>
+            <Route path='/' element = {<Dashboard/>}/>
+          </Routes>
+        </>
+      )}
     </Router>
   )
 }

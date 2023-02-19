@@ -11,7 +11,7 @@ export const SidebarData = [
   },
   {
     title: 'Projects',
-    path: '/reports',
+    path: '/projects',
     icon: <IoIcons.IoIosPaper />,
   },
   {

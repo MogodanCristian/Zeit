@@ -97,6 +97,7 @@ const Login = () => {
         const user = jwt(token)
         dispatch(loginSuccess(user))
         navigate("/")
+        console.log(user)
       })
     } catch (error) {
       dispatch(loginFailure())
