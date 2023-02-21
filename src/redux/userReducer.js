@@ -14,7 +14,14 @@ const userSlice = createSlice({
         },
         loginSuccess: (state, action) =>{
             state.isFetching = false;
-            state.currentUser = action.payload;
+            state.currentUser = action.payload.user;
+            state.jwt = action.payload.jwt;
+        },
+        keepLogged: (state, action) =>{
+            state.isFetching = false;
+            state.currentUser = action.payload.user;
+            state.jwt = action.payload.jwt;
+            localStorage.setItem("USER_STORAGE", JSON.stringify(action.payload));
         },
         loginFailure: (state) =>{
             state.isFetching = false;
@@ -24,12 +31,10 @@ const userSlice = createSlice({
             state.isFetching = false;
             state.currentUser = null;
             state.jwt = null;
-        },
-         setJWT: (state, action)=>{
-            state.jwt = action.payload;
+            localStorage.removeItem("USER_STORAGE");
         }
     }
 })
 
-export const {loginStart, loginSuccess, loginFailure, logout, setJWT} = userSlice.actions;
+export const {loginStart, loginSuccess, loginFailure, logout, setJWT, keepLogged} = userSlice.actions;
 export default userSlice.reducer;

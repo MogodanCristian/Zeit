@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
-import { loginFailure, loginStart, loginSuccess } from '../redux/userReducer'; 
+import { loginFailure, loginStart, loginSuccess, keepLogged } from '../redux/userReducer'; 
 import jwt from 'jwt-decode'
 
 const OuterContainer = styled.div`
@@ -81,10 +81,14 @@ const Login = () => {
   const navigate = useNavigate()
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [keepLoggedToggle, setKeepLoggedToggle]= useState(false)
   const { isFetching, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const user = useSelector((state)=> state.user.currentUser)
-  
+
+  const handlePersistance = () =>{
+    setKeepLoggedToggle(!keepLoggedToggle)
+  }
   const handleClick = (e) => {
     e.preventDefault();
     dispatch(loginStart())
@@ -95,7 +99,12 @@ const Login = () => {
       }).then((response) =>{
         const token = response.data;
         const user = jwt(token)
-        dispatch(loginSuccess(user))
+        console.log(user)
+        if(keepLoggedToggle)
+        {
+          dispatch(keepLogged({user, token}))
+        }
+        dispatch(loginSuccess({user, token}))
         navigate("/")
         console.log(user)
       })
@@ -123,7 +132,7 @@ const Login = () => {
               Login
             </Button>
             <CheckboxContainer>
-              <Checkbox/>
+              <Checkbox onChange={handlePersistance} checked={keepLoggedToggle}/>
               <span>Keep me logged in</span>
             </CheckboxContainer>
             <ForgotPassword>Forgot password? Click <Link to={'/forgot_password'}>here</Link>!
