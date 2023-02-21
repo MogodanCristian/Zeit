@@ -26,7 +26,10 @@ const Wrapper = styled.div`
   align-items: center;
   flex-direction: column;
   display: flex;
-  border-radius: 10px
+  border-radius: 10px;
+
+  @media only screen and (max-width: 768px) {
+    width: 90%;}
 `;
 
 const Title = styled.h1`
@@ -43,7 +46,7 @@ const Form = styled.form`
 const Input = styled.input`
   flex: 1;
   min-width: 40%;
-  width:300px;
+  width:100%;
   margin: 20px 0;
   padding: 10px;
   font-size: medium;

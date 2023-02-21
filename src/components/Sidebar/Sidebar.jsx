@@ -72,7 +72,10 @@ const Logout = styled.li`
   padding: 8px 0px 8px 16px;
   list-style: none;
   height: 60px;
-  margin-top: 250px;
+  position: absolute;
+  bottom: 20px; 
+  left: 0;
+  right: 0;
   a {
     text-decoration: none;
     color: #f5f5f5;
