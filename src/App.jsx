@@ -2,12 +2,9 @@ import {useEffect, useState} from 'react'
 import Sidebar from './components/Sidebar/Sidebar'
 import { 
   BrowserRouter as Router,
-  Link,
   Navigate,
   Route,
   Routes,
-  useLocation,
-  useNavigate,
 } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import { createGlobalStyle }from 'styled-components'
@@ -15,6 +12,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import Login from './pages/Login'
 import { loginSuccess } from './redux/userReducer'
 import Projects from './pages/Projects'
+import Unauthorized from './pages/Unauthorized'
+import Team from './pages/Team'
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
@@ -27,67 +26,44 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function App() {
-
   const dispatch = useDispatch();
-
+  const [isLoading, setIsLoading] = useState(true);
   const user = useSelector((state) => state.user.currentUser);
-  const [lastLocation, setLastLocation] = useState(localStorage.getItem('LAST_LOCATION'));
-
+  
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem('USER_STORAGE'));
     console.log(loggedUser)
-    console.log(lastLocation)
     if (loggedUser) {
       dispatch(loginSuccess(loggedUser));
     }
+    setIsLoading(false);
   }, []);
-  
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      localStorage.setItem("LAST_LOCATION", window.location.pathname);
-      setLastLocation(window.location.pathname)
-    };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div>
-      <GlobalStyle/>
-      {!user && (
+    <Router>
+      <GlobalStyle />
+      <>
+        {user && <Sidebar />}
         <Routes>
-          <Route path ='/login' element={<Login/>}/>
-          <Route path='/' element = {<Navigate to={'/login'}/>}/>
-          <Route path='*' element = {<Navigate to={'/login'}/>}/>
+          <Route path='/login' element={user ? <Navigate to={'/'} /> : <Login />} />
+          <Route path='/unauthorized' element={user ? <Unauthorized /> : <Navigate to={'/login'} />} />
+          {user === null ? (
+            <Route path='*' element={<Navigate to='/login' replace />} />
+          ) : (
+            <>
+              <Route path='/' element={<Dashboard />} />
+              <Route path='/team' element={<Team />} />
+              <Route path='/projects' element={user.role === 'employee' ? <Projects /> : <Navigate to={'/unauthorized'} />} />
+            </>
+          )}
         </Routes>
-      )}
-      {user && user.role === 'manager' && (
-        <>
-          <Sidebar/>
-          <Routes>
-            <Route path='/' element = {<Dashboard/>}/>
-            <Route path='/projects' element = {<Projects/>}/>
-            <Route path='*' element = {lastLocation? <Navigate to={lastLocation}/> : <Navigate to={'/'}/>}/>
-          </Routes>
-        </>
-      )}
-      {user && user.role === 'employee' && (
-        <>
-        
-          <Sidebar/>
-          <Routes>
-            <Route path='/' element = {<Dashboard/>}/>
-            <Route path='/projects' element = {<Projects/>}/>
-            <Route path='*' element = {lastLocation? <Navigate to={lastLocation}/> : <Navigate to={'/'}/>}/>
-          </Routes>
-        </>
-      )}
-    </div>
-  )
+      </>
+    </Router>
+  );
 }
 
-export default App
+export default App;
