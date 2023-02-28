@@ -32,6 +32,7 @@ const userSlice = createSlice({
             state.currentUser = null;
             state.jwt = null;
             localStorage.removeItem("USER_STORAGE");
+            localStorage.removeItem("LAST_LOCATION");
         }
     }
 })

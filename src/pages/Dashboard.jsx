@@ -6,7 +6,7 @@ const Dashboard = () => {
   console.log(user)
   return (
     <div>
-      <p>User ID: {user._id}</p>
+      <p>Hello, {user.first_name} {user.last_name}!</p>
     </div>
   )
 }
