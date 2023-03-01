@@ -57,7 +57,7 @@ function App() {
             <>
               <Route path='/' element={<Dashboard />} />
               <Route path='/team' element={<Team />} />
-              <Route path='/projects' element={user.role === 'employee' ? <Projects /> : <Navigate to={'/unauthorized'} />} />
+              <Route path='/projects' element={user.role === 'manager' ? <Projects /> : <Navigate to={'/unauthorized'} />} />
             </>
           )}
         </Routes>
