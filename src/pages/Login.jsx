@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { loginFailure, loginStart, loginSuccess, keepLogged } from '../redux/userReducer'; 
 import jwt from 'jwt-decode'
+import Spinner from 'react-bootstrap/Spinner';
 
 const OuterContainer = styled.div`
  background-color: #060b26;`
@@ -22,7 +23,7 @@ const Wrapper = styled.div`
   width: 25%;
   padding: 20px;
   background-color: white;
-  height: 50vh;
+  height: 50vh+20px;
   align-items: center;
   flex-direction: column;
   display: flex;
@@ -80,40 +81,44 @@ const ForgotPassword = styled.span`
     font-size: medium;
 `
 
+const Error = styled.p`
+  font-size: medium;
+  color: red;
+`
+
 const Login = () => {
   const navigate = useNavigate()
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [keepLoggedToggle, setKeepLoggedToggle]= useState(false)
-  const { isFetching, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const user = useSelector((state)=> state.user.currentUser)
-
+  const isFetching = useSelector((state) => state.user.isFetching)
+  const [loginFail, setLoginFail] = useState(false)
   const handlePersistance = () =>{
     setKeepLoggedToggle(!keepLoggedToggle)
   }
   const handleClick = (e) => {
     e.preventDefault();
     dispatch(loginStart())
-    try {
-       axios.post("http://3.69.101.106:3080/api/auth/login", {
-        email: username,
-        password: password
-      }).then((response) =>{
-        const token = response.data;
-        const user = jwt(token)
-        console.log(user)
-        if(keepLoggedToggle)
-        {
-          dispatch(keepLogged({user, token}))
-        }
-        dispatch(loginSuccess({user, token}))
-        navigate("/")
-        console.log(user)
-      })
-    } catch (error) {
+    axios.post("http://3.69.101.106:3080/api/auth/login", {
+      email: username,
+      password: password
+    })
+    .then((response) => {
+      const token = response.data;
+      const user = jwt(token)
+      console.log(user)
+      if(keepLoggedToggle) {
+        dispatch(keepLogged({user: user, jwt: token}))
+      }
+      dispatch(loginSuccess({user: user, jwt: token}))
+      navigate("/")
+    })
+    .catch((error) => {
       dispatch(loginFailure())
-    }
+      setLoginFail(true)
+
+    });
   };
 
   return (
@@ -140,6 +145,8 @@ const Login = () => {
             </CheckboxContainer>
             <ForgotPassword>Forgot password? Click <Link to={'/forgot_password'}>here</Link>!
             </ForgotPassword>
+            {isFetching && <Spinner/>}
+            {loginFail && <Error>Email or password are incorrect.Try again.</Error>}
           </Form>
         </Wrapper>
       </InnerContainer>

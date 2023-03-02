@@ -32,10 +32,9 @@ const userSlice = createSlice({
             state.currentUser = null;
             state.jwt = null;
             localStorage.removeItem("USER_STORAGE");
-            localStorage.removeItem("LAST_LOCATION");
         }
     }
 })
 
-export const {loginStart, loginSuccess, loginFailure, logout, setJWT, keepLogged} = userSlice.actions;
+export const {loginStart, loginSuccess, loginFailure, logout, keepLogged} = userSlice.actions;
 export default userSlice.reducer;

@@ -29,12 +29,12 @@ function App() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const user = useSelector((state) => state.user.currentUser);
+  const jwt = useSelector((state) => state.user.jwt);
   
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem('USER_STORAGE'));
-    console.log(loggedUser)
     if (loggedUser) {
-      dispatch(loginSuccess(loggedUser));
+      dispatch(loginSuccess({user: loggedUser.user, jwt: loggedUser.jwt}));
     }
     setIsLoading(false);
   }, []);
