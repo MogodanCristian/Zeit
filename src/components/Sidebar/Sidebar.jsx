@@ -34,10 +34,11 @@ const NavMenu = styled.nav`
   top: 0;
   left: -100%;
   transition: 850ms;
-
+  z-index:-1;
   &.active {
     left: 0;
     transition: 350ms;
+    z-index:100;
   }
 `;
 

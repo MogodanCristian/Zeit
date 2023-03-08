@@ -1,12 +1,12 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import "bootstrap/dist/css/bootstrap.min.css"
 import styled from 'styled-components';
+import ProjectCard from '../components/ProjectCard';
 
 const PageContainer = styled.div`
   justify-content: center;
@@ -25,21 +25,8 @@ const CardContainer = styled.div`
   padding-left: 20px;
   flex-wrap: wrap;
   justify-content: center;
-  z-index: -1;
   justify-content: space-evenly;
 `
-
-const StyledCard = styled(Card)`
-  margin: 20px;
-  z-index: -1;
-  background-color: ${() => {
-  const hue = Math.floor(Math.random() * 360);
-  const saturation = Math.floor(Math.random() * 70) + 30;
-  const brightness = Math.floor(Math.random() * 40) + 10;
-  const randomColor = `hsl(${hue}, ${saturation}%, ${brightness}%)`;
-  return randomColor;
-}};
-`;
 
 const Projects = () => {
   const user = useSelector((state)=> state.user.currentUser)
@@ -53,7 +40,7 @@ const Projects = () => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = 'http://localhost:3000/api/projects/find/'+ user._id
+    const path = 'http://3.69.101.106:3080/api/projects/find/'+ user._id
     console.log(path)
     axios.get(path, config)
       .then(response => {
@@ -96,19 +83,12 @@ const Projects = () => {
     </Modal>
     <CardContainer>
       {projects.map((item,index) => (
-        <StyledCard
-        text={'white'}
-        style={{ width: '18rem'}}
-        className="mb-2"
-        >
-          <StyledCard.Header>{index+1}.</StyledCard.Header>
-          <StyledCard.Body>
-            <StyledCard.Title>{item.title} </StyledCard.Title>
-            <StyledCard.Text>
-              {item.description}
-            </StyledCard.Text>
-          </StyledCard.Body>
-        </StyledCard>
+        <ProjectCard 
+        title={item.title}
+        description = {item.description}
+        index= {index}
+        key={index}
+        />
       ))}
       </CardContainer>
       </PageContainer>

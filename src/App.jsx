@@ -15,6 +15,7 @@ import Projects from './pages/Projects'
 import Unauthorized from './pages/Unauthorized'
 import Team from './pages/Team'
 import AdminDashboard from './pages/AdminDashboard'
+import ForgotPassword from './pages/ForgotPassword'
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
@@ -56,10 +57,10 @@ function App() {
             <Route path='*' element={<Navigate to='/login' replace />} />
           ) : (
             <>
-              <Route path='/' element={<Dashboard />} />
+              <Route path='/' element={user.role === 'admin'? <AdminDashboard/> :<Dashboard />} />
               <Route path='/team' element={<Team />} />
-              <Route path='/projects' element={user.role === 'manager' ? <Projects /> : <Navigate to={'/unauthorized'} />} />
-              <Route path='/adminDashboard' element={user.role === 'admin' ? <AdminDashboard/> : <Navigate to={'/unauthorized'}/>}/>
+              <Route path='/projects' element={<Projects />} />
+              <Route path = '/forgotPassword' element={<ForgotPassword/>}/>
             </>
           )}
         </Routes>
