@@ -40,7 +40,7 @@ const Projects = () => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = 'http://3.69.101.106:3080/api/projects/find/'+ user._id
+    const path = 'http://localhost:3000/api/projects/find/'+ user._id
     console.log(path)
     axios.get(path, config)
       .then(response => {
@@ -86,6 +86,8 @@ const Projects = () => {
         <ProjectCard 
         title={item.title}
         description = {item.description}
+        start_date = {item.start_date}
+        end_date = {item.end_date}
         index= {index}
         key={index}
         />

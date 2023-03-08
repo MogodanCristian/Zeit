@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 import styled from 'styled-components';
 import "bootstrap/dist/css/bootstrap.min.css";
+
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  const options = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: true
+  };
+  return date.toLocaleString('en-US', options);
+}
 
 const StyledCard = styled(Card)`
   margin: 20px;
@@ -13,18 +27,6 @@ const StyledDropdownButton = styled(DropdownButton)`
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  --bs-btn-color: #fff;
-    --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: transparent !important;
-    --bs-btn-hover-border-color: transparent !important;
-    --bs-btn-focus-shadow-rgb: 49,132,253;
-    --bs-btn-active-color: #fff;
-    --bs-btn-active-bg: transparent !important;
-    --bs-btn-active-border-color: transparent !important;
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: #fff;
-    --bs-btn-disabled-bg: transparent !important;
-    --bs-btn-disabled-border-color: transparent !important;
   
   .dropdown-toggle::after {
     color: transparent !important;
@@ -55,12 +57,13 @@ const StyledDropdownButton = styled(DropdownButton)`
   }
 `;
 
-const ProjectCard = ({title, description, index}) => {
-  const randomColor = `hsl(${Math.floor(Math.random() * 360)}, ${Math.floor(Math.random() * 70) + 30}%, ${Math.floor(Math.random() * 40) + 10}%)`;
+const ProjectCard = ({title, description, start_date, end_date, index}) => {
+  const [bgColor, setBgColor] = useState(`hsl(${Math.floor(Math.random() * 360)}, ${Math.floor(Math.random() * 70) + 30}%, ${Math.floor(Math.random() * 40) + 10}%)`);
+  
   return (
     <StyledCard 
       text={'white'}
-      style={{ width: '18rem', backgroundColor: randomColor}}
+      style={{ width: '18rem', backgroundColor: bgColor }}
       className="mb-2"
     >
       <StyledCard.Header>
@@ -74,6 +77,12 @@ const ProjectCard = ({title, description, index}) => {
         <StyledCard.Title>{title} </StyledCard.Title>
         <StyledCard.Text>
           {description}
+        </StyledCard.Text>
+        <StyledCard.Text>
+          Start Date: {formatDate(start_date)}
+        </StyledCard.Text>
+        <StyledCard.Text>
+          End Date: {formatDate(end_date)}
         </StyledCard.Text>
       </StyledCard.Body>
     </StyledCard>
