@@ -68,9 +68,8 @@ const ProjectCard = ({title, description, start_date, end_date, index}) => {
     >
       <StyledCard.Header>
         <StyledDropdownButton id="dropdown-basic-button"title={'Options'}>
-          <Dropdown.Item href="#action/1">Action</Dropdown.Item>
-          <Dropdown.Item href="#action/2">Another action</Dropdown.Item>
-          <Dropdown.Item href="#action/3">Something else</Dropdown.Item>
+          <Dropdown.Item href="#action/1">Edit...</Dropdown.Item>
+          <Dropdown.Item href="#action/2">Delete</Dropdown.Item>
         </StyledDropdownButton>
       </StyledCard.Header>
       <StyledCard.Body>

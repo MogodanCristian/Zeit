@@ -1,13 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
 import "bootstrap/dist/css/bootstrap.min.css"
 import styled from 'styled-components';
 import ProjectCard from '../components/ProjectCard';
-
+import CreateProjectModal from '../components/CreateProjectModal';
 const PageContainer = styled.div`
   justify-content: center;
   z-index: -1;
@@ -40,7 +38,7 @@ const Projects = () => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = 'http://localhost:3000/api/projects/find/'+ user._id
+    const path = 'http://3.69.101.106:3080/api/projects/find/'+ user._id
     console.log(path)
     axios.get(path, config)
       .then(response => {
@@ -58,29 +56,7 @@ const Projects = () => {
     { user.role === 'manager' &&
     <StyledButton onClick={handleShowForm}>Create a new project</StyledButton>
     }
-     <Modal show={showCreateForm} onHide={handleCloseForm}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create Project</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formTitle" className="mt-3">
-              <Form.Label>Title</Form.Label>
-              <Form.Control type="text" placeholder="Enter title..." />
-            </Form.Group>
-            <Form.Group controlId="formDescription" className="mt-3">
-              <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" rows={3} placeholder="Enter description..." />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseForm}>
-            Close
-          </Button>
-          <Button variant="primary">Create</Button>
-        </Modal.Footer>
-    </Modal>
+     <CreateProjectModal show={showCreateForm} onHide={handleCloseForm}/>
     <CardContainer>
       {projects.map((item,index) => (
         <ProjectCard 
