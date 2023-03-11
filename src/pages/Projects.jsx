@@ -60,6 +60,7 @@ const Projects = () => {
     <CardContainer>
       {projects.map((item,index) => (
         <ProjectCard 
+        _id = {item._id}
         title={item.title}
         description = {item.description}
         start_date = {item.start_date}
