@@ -31,6 +31,7 @@ const Projects = () => {
   const token = useSelector((state) => state.user.jwt)
   const [projects, setProjects] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
   const handleCloseForm = () => setShowCreateForm(false);
   const handleShowForm = () => setShowCreateForm(true);
 
@@ -43,7 +44,10 @@ const Projects = () => {
     axios.get(path, config)
       .then(response => {
         setProjects(response.data);
-        console.log(response.data)
+        if(response.data.length === 0)
+        {
+          setIsEmpty(true)
+        }
       })
       .catch(error => {
         console.log(error);
@@ -69,6 +73,8 @@ const Projects = () => {
         key={index}
         />
       ))}
+      {isEmpty &&
+      <div style={{fontSize: "30px"}}>There are no projects to show!</div>}
       </CardContainer>
       </PageContainer>
     </>

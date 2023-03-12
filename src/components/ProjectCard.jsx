@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import EditProjectModal from './EditProjectModal';
+import { useNavigate } from 'react-router-dom';
 
 function formatDate(dateString) {
   const startDate = dateString.substr(0, 10); // extract date
@@ -57,7 +58,7 @@ const StyledDropdownButton = styled(DropdownButton)`
 
 const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
   const token = useSelector((state) => state.user.jwt);
-
+  const navigate = useNavigate()
   const [bgColor, setBgColor] = useState(`hsl(${Math.floor(Math.random() * 360)}, ${Math.floor(Math.random() * 70) + 30}%, ${Math.floor(Math.random() * 40) + 10}%)`);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -86,6 +87,7 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
       text={'white'}
       style={{ width: '18rem', backgroundColor: bgColor }}
       className="mb-2"
+      onClick={()=>{navigate('/projects/'+_id+'/buckets')}}
     >
       <StyledCard.Header>
         <StyledDropdownButton id="dropdown-basic-button" title={'Options'}>
