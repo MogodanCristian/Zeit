@@ -12,9 +12,13 @@ import EditProjectModal from './EditProjectModal';
 import { useNavigate } from 'react-router-dom';
 
 function formatDate(dateString) {
-  const startDate = dateString.substr(0, 10); // extract date
+  const startDate = new Date(dateString.substr(0, 10)).toLocaleString('en-US', {
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+  })
   const startTime = dateString.slice(11, 16);
-  return startDate + " " + startTime
+  return startDate + ", " + startTime
 }
 
 
@@ -87,15 +91,15 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
       text={'white'}
       style={{ width: '18rem', backgroundColor: bgColor }}
       className="mb-2"
-      onClick={()=>{navigate('/projects/'+_id+'/buckets')}}
     >
-      <StyledCard.Header>
+      <StyledCard.Header style={{flexDirection: "row", display:'flex', justifyContent:'space-between'}}>
+        {index+1}. 
         <StyledDropdownButton id="dropdown-basic-button" title={'Options'}>
           <Dropdown.Item onClick={handleShowEdit}>Edit...</Dropdown.Item>
           <Dropdown.Item onClick={handleShowDelete}>Delete</Dropdown.Item>
         </StyledDropdownButton>
       </StyledCard.Header>
-      <StyledCard.Body>
+      <StyledCard.Body onClick={()=>{navigate('/projects/'+_id+'/buckets')}}>
         <StyledCard.Title>{title} </StyledCard.Title>
         <StyledCard.Text>
           {description}
