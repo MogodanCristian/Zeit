@@ -14,6 +14,8 @@ import { loginSuccess } from './redux/userReducer'
 import Projects from './pages/Projects'
 import Unauthorized from './pages/Unauthorized'
 import Team from './pages/Team'
+import AdminDashboard from './pages/AdminDashboard'
+import ForgotPassword from './pages/ForgotPassword'
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
@@ -29,12 +31,12 @@ function App() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const user = useSelector((state) => state.user.currentUser);
+  const jwt = useSelector((state) => state.user.jwt);
   
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem('USER_STORAGE'));
-    console.log(loggedUser)
     if (loggedUser) {
-      dispatch(loginSuccess(loggedUser));
+      dispatch(loginSuccess({user: loggedUser.user, jwt: loggedUser.jwt}));
     }
     setIsLoading(false);
   }, []);
@@ -55,9 +57,10 @@ function App() {
             <Route path='*' element={<Navigate to='/login' replace />} />
           ) : (
             <>
-              <Route path='/' element={<Dashboard />} />
+              <Route path='/' element={user.role === 'admin'? <AdminDashboard/> :<Dashboard />} />
               <Route path='/team' element={<Team />} />
-              <Route path='/projects' element={user.role === 'manager' ? <Projects /> : <Navigate to={'/unauthorized'} />} />
+              <Route path='/projects' element={<Projects />} />
+              <Route path = '/forgotPassword' element={<ForgotPassword/>}/>
             </>
           )}
         </Routes>
