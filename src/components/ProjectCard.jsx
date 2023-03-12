@@ -8,20 +8,14 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import EditProjectModal from './EditProjectModal';
 
-function formatDate(dateStr) {
-  const date = new Date(dateStr);
-  const options = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-    hour12: true
-  };
-  return date.toLocaleString('en-US', options);
+function formatDate(dateString) {
+  const startDate = dateString.substr(0, 10); // extract date
+  const startTime = dateString.slice(11, 16);
+  return startDate + " " + startTime
 }
+
 
 const StyledCard = styled(Card)`
   margin: 20px;
@@ -65,10 +59,14 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
   const token = useSelector((state) => state.user.jwt);
 
   const [bgColor, setBgColor] = useState(`hsl(${Math.floor(Math.random() * 360)}, ${Math.floor(Math.random() * 70) + 30}%, ${Math.floor(Math.random() * 40) + 10}%)`);
-  const [showModal, setShowModal] = useState(false);
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
-  const handleClose = () => setShowModal(false);
-  const handleShow = () => setShowModal(true);
+  const handleCloseEdit = () => setShowEditModal(false);
+  const handleShowEdit = () => setShowEditModal(true);
+
+  const handleCloseDelete = () => setShowConfirmDeleteModal(false);
+  const handleShowDelete = () => setShowConfirmDeleteModal(true);
 
   const handleDelete = () => {
     const config = {
@@ -91,8 +89,8 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
     >
       <StyledCard.Header>
         <StyledDropdownButton id="dropdown-basic-button" title={'Options'}>
-          <Dropdown.Item>Edit...</Dropdown.Item>
-          <Dropdown.Item onClick={handleShow}>Delete</Dropdown.Item>
+          <Dropdown.Item onClick={handleShowEdit}>Edit...</Dropdown.Item>
+          <Dropdown.Item onClick={handleShowDelete}>Delete</Dropdown.Item>
         </StyledDropdownButton>
       </StyledCard.Header>
       <StyledCard.Body>
@@ -108,13 +106,13 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
         </StyledCard.Text>
       </StyledCard.Body>
 
-      <Modal show={showModal} onHide={handleClose}>
+      <Modal show={showConfirmDeleteModal} onHide={handleCloseDelete}>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
         <Modal.Body>Are you sure you want to delete this project?</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleCloseDelete}>
             Cancel
           </Button>
           <Button variant="danger" onClick={handleDelete}>
@@ -122,6 +120,14 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <EditProjectModal 
+        show={showEditModal} 
+        onHide={handleCloseEdit} 
+        defaultTitle={title} 
+        defaultDescription={description} 
+        defaultStartDateTime={start_date}
+        defaultEndDateTime={end_date}
+        _id={_id}/>
     </StyledCard>
   );
 };
