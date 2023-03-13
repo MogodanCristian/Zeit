@@ -63,6 +63,7 @@ const StyledDropdownButton = styled(DropdownButton)`
 const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
   const token = useSelector((state) => state.user.jwt);
   const navigate = useNavigate()
+  const user = useSelector((state)=> state.user.currentUser)
   const [bgColor, setBgColor] = useState(`hsl(${Math.floor(Math.random() * 360)}, ${Math.floor(Math.random() * 70) + 30}%, ${Math.floor(Math.random() * 40) + 10}%)`);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -94,10 +95,10 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
     >
       <StyledCard.Header style={{flexDirection: "row", display:'flex', justifyContent:'space-between'}}>
         {index+1}. 
-        <StyledDropdownButton id="dropdown-basic-button" title={'Options'}>
+       {user.role === 'manager' && <StyledDropdownButton id="dropdown-basic-button" title={'Options'}>
           <Dropdown.Item onClick={handleShowEdit}>Edit...</Dropdown.Item>
           <Dropdown.Item onClick={handleShowDelete}>Delete</Dropdown.Item>
-        </StyledDropdownButton>
+        </StyledDropdownButton>}
       </StyledCard.Header>
       <StyledCard.Body onClick={()=>{navigate('/projects/'+_id+'/buckets')}}>
         <StyledCard.Title>{title} </StyledCard.Title>

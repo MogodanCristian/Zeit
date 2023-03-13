@@ -6,9 +6,9 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import styled from 'styled-components';
 import ProjectCard from '../components/ProjectCard';
 import CreateProjectModal from '../components/CreateProjectModal';
+
 const PageContainer = styled.div`
   justify-content: center;
-  z-index: -1;
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -40,7 +40,6 @@ const Projects = () => {
       headers: { 'auth-token': token }
     };
     const path = 'http://3.69.101.106:3080/api/projects/find/'+ user._id
-    console.log(path)
     axios.get(path, config)
       .then(response => {
         setProjects(response.data);
