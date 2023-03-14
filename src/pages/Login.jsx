@@ -74,7 +74,7 @@ const CheckboxContainer = styled.div`
 `
 
 const Checkbox = styled.input.attrs({type: 'checkbox'})`
-  
+  margin-right: 5px;
 `
 const ForgotPassword = styled.span`
     margin-top: 10px;

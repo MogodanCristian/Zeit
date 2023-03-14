@@ -62,7 +62,7 @@ function App() {
               <Route path='/team' element={<Team />} />
               <Route path='/projects' element={<Projects />} />
               <Route path = '/forgotPassword' element={<ForgotPassword/>}/>
-              <Route path = '/projects/:projectID/buckets' element={<Buckets/>}/>
+              <Route path = '/projects/:projectID/:projectTitle/buckets' element={<Buckets/>}/>
             </>
           )}
         </Routes>

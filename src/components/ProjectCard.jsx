@@ -100,7 +100,7 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
           <Dropdown.Item onClick={handleShowDelete}>Delete</Dropdown.Item>
         </StyledDropdownButton>}
       </StyledCard.Header>
-      <StyledCard.Body onClick={()=>{navigate('/projects/'+_id+'/buckets')}}>
+      <StyledCard.Body onClick={()=>{navigate('/projects/'+_id + '/'+ title + '/buckets')}}>
         <StyledCard.Title>{title} </StyledCard.Title>
         <StyledCard.Text>
           {description}

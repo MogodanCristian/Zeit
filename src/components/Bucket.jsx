@@ -1,29 +1,45 @@
-import React from 'react'
+import React from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 30%;
-  height: 80%;
-  background-color: green;
-  flex-wrap: wrap;
-  min-width: fit-content;
-`
+  display: inline-block;
+  width: 250px;
+  height: 74vh;
+  overflow-y: auto;
+  margin-left: 30px;
+  vertical-align: top;
+  &:last-child {
+    margin-right: 30px;
+  }
+
+`;
 
 const Title = styled.h1`
   font-size: 24px;
   font-weight: 300;
+  margin: 10px;
+  max-width: 200px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+`;
+
+const Separator = styled.div`
+  width: 100%;
+  height: 2px;
+  background-color: gray;
+  margin-top: 10px;
+  margin-bottom: 10px;
 `;
 
 const Bucket = ({title}) => {
   return (
     <Container>
-        <Title>{title}</Title>
+      <Title>{title.length > 50 ? title.substring(0, 50) + '...' : title}</Title>
+      <Separator />
+      {/* Add your list items here */}
     </Container>
-  )
-}
+  );
+};
 
-export default Bucket
+export default Bucket;
