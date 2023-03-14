@@ -37,7 +37,6 @@ const Bucket = ({title}) => {
     <Container>
       <Title>{title.length > 50 ? title.substring(0, 50) + '...' : title}</Title>
       <Separator />
-      {/* Add your list items here */}
     </Container>
   );
 };

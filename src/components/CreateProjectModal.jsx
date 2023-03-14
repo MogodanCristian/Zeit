@@ -12,7 +12,7 @@ const Error = styled.span`
 `
 
 const CreateProjectModal = ({ show, onHide }) => {
-  const today = new Date().toISOString().substr(0, 10);
+  const today = new Date().toISOString().split('T')[0]
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState(today);
