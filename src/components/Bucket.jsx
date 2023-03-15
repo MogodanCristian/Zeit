@@ -11,7 +11,6 @@ const Container = styled.div`
   &:last-child {
     margin-right: 30px;
   }
-
 `;
 
 const Title = styled.h1`

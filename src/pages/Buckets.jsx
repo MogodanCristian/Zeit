@@ -60,6 +60,8 @@ function getProjectTitle() {
 }
 
 const Buckets = () => {
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
   const projectID = getProjectID()
   const projectTitle = getProjectTitle()
   const token = useSelector((state) => state.user.jwt)
@@ -73,7 +75,7 @@ const Buckets = () => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = 'http://3.69.101.106:3080/api/buckets/getBuckets/'+ projectID
+    const path = apiUrl+'/buckets/getBuckets/'+ projectID
     axios.get(path, config)
       .then(response => {
         setBuckets(response.data);

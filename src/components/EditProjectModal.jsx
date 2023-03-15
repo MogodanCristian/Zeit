@@ -12,6 +12,8 @@ const Error = styled.span`
 `
 
 const EditProjectModal = ({ show, onHide, defaultTitle, defaultDescription, defaultStartDateTime, defaultEndDateTime,_id}) => {
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
   const defaultStartDate = defaultStartDateTime.substr(0, 10); 
   const defaultStartTime = defaultStartDateTime.slice(11, 16); 
   const defaultEndDate = defaultEndDateTime.substr(0, 10); 
@@ -54,7 +56,7 @@ const EditProjectModal = ({ show, onHide, defaultTitle, defaultDescription, defa
       const config = {
         headers: { 'auth-token': token }
       };
-      const path = 'http://3.69.101.106:3080/api/projects/'+_id
+      const path = apiUrl+'/projects/'+_id
       console.log(path)
       axios.put(path,{
         title: title,

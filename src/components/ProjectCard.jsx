@@ -61,6 +61,8 @@ const StyledDropdownButton = styled(DropdownButton)`
 `;
 
 const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
   const navigate = useNavigate()
   const user = useSelector((state)=> state.user.currentUser)
@@ -78,7 +80,7 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = 'http://3.69.101.106:3080/api/projects/'+ _id
+    const path = apiUrl+'/projects/'+ _id
     axios.delete(path, config).then(response => {
       console.log(response);
       window.location.reload();

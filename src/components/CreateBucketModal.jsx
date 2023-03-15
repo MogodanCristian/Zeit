@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 const CreateBucketModal = ({show, onHide,projectID}) => {
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
   const [title, setTitle] = useState('');
 
@@ -17,7 +19,7 @@ const CreateBucketModal = ({show, onHide,projectID}) => {
     const config = {
         headers: { 'auth-token': token }
       };
-    const path = 'http://3.69.101.106:3080/api/buckets/'+ projectID
+    const path = apiUrl+'/buckets/'+ projectID
     axios.post(path, { title: title }, config)
     .then(response => {
       onHide();

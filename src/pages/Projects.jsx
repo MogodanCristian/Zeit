@@ -27,6 +27,8 @@ const CardContainer = styled.div`
 `
 
 const Projects = () => {
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
   const user = useSelector((state)=> state.user.currentUser)
   const token = useSelector((state) => state.user.jwt)
   const [projects, setProjects] = useState([]);
@@ -39,7 +41,7 @@ const Projects = () => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = 'http://3.69.101.106:3080/api/projects/find/'+ user._id
+    const path = apiUrl+'/projects/find/'+ user._id
     axios.get(path, config)
       .then(response => {
         setProjects(response.data);
