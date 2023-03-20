@@ -29,10 +29,6 @@ const EditProjectModal = ({ show, onHide, defaultTitle, defaultDescription, defa
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isModified, setIsModified] = useState(false)
-  
-
-  console.log(defaultStartTime)
-  console.log(defaultEndTime)
 
   const handleCreate = () => {
     if (title.trim() === '' || description.trim() === '' || startDate.trim() === '' || startTime.trim() === '' || endDate.trim() === '' || endTime.trim() === '') {

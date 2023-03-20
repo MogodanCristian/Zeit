@@ -16,6 +16,7 @@ const PageContainer = styled.div`
 const BucketContainer = styled.div`
   margin-top: 30px;
   display: block;
+  height: 69vh;
   white-space: nowrap;
   overflow-x: scroll;
   &::-webkit-scrollbar {
@@ -93,9 +94,11 @@ const Buckets = () => {
         <StyledButton onClick={handleShowCreateBucket}>Create Bucket</StyledButton>
       </ButtonContainer>
       <BucketContainer>
-        {buckets.map((item) =>(
+        {buckets.map((item,index) =>(
           <Bucket
           title={item.title}
+          _id={item._id}
+          key={index}
           />
         ))}
       </BucketContainer>
