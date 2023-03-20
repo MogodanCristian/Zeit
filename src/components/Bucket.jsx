@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Modal from 'react-bootstrap/Modal';
@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import EditBucketModal from './EditBucketModal';
+import Task from './Task';
+import ThreeDotsToggle from './ThreeDotsToggle';
 
 const Container = styled.div`
   display: inline-block;
@@ -45,48 +47,35 @@ const Separator = styled.div`
   margin-bottom: 10px;
 `;
 
-const ThreeDots = styled.span`
-  &::after {
-    content:"\\22EF";
-    font-size: 30px;
-    margin-left: 5px;
-    vertical-align: middle;
-  }
+const TaskContainer = styled.div`
 `
-const CustomToggle = forwardRef(({ children, onClick }, ref) => (
-  <a
-    href=""
-    ref={ref}
-    style={{ textDecoration: "none"}}
-    onClick={(e) => {
-      e.preventDefault();
-      onClick(e);
-    }}
-  >
-    {children}
-    <ThreeDots/>
-  </a>
-));
-
 const Bucket = ({ title, _id}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
-  const navigate = useNavigate()
-  const user = useSelector((state)=> state.user.currentUser)
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-
+  const [tasks, setTasks] = useState([]);
   const handleCloseEdit = () => setShowEditModal(false);
   const handleShowEdit = () => setShowEditModal(true);
 
   const handleCloseDelete = () => setShowConfirmDeleteModal(false);
   const handleShowDelete = () => setShowConfirmDeleteModal(true);
-  const [showMenu, setShowMenu] = useState(false);
 
-  const handleEditClick = () => {
-    // handle edit click
-  };
+  useEffect(() => {
+    const config = {
+      headers: { 'auth-token': token }
+    };
+    const path = apiUrl+'/tasks/getTasks/'+ _id
+    axios.get(path, config)
+      .then(response => {
+        console.log(response.data)
+        setTasks(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [_id])
 
   const handleDelete = () => {
     const config = {
@@ -107,7 +96,7 @@ const Bucket = ({ title, _id}) => {
       <TitleContainer>
         <Title>{title}</Title>
         <Dropdown drop="left">
-          <Dropdown.Toggle as={CustomToggle} />
+          <Dropdown.Toggle as={ThreeDotsToggle} />
           <Dropdown.Menu size="sm" title="" align="end" >
             <Dropdown.Item onClick={handleShowEdit}>Edit...</Dropdown.Item>
             <Dropdown.Item onClick={handleShowDelete}>Delete</Dropdown.Item>
@@ -115,7 +104,16 @@ const Bucket = ({ title, _id}) => {
         </Dropdown>
       </TitleContainer>
       <Separator />
-
+      <TaskContainer>
+        {
+          tasks.map((item,index) => (
+            <Task
+            title={item.title}
+            key={index}
+            />
+          ))
+        }
+      </TaskContainer>
       <Modal show={showConfirmDeleteModal} onHide={handleCloseDelete}>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Delete</Modal.Title>
