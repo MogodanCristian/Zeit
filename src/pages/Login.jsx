@@ -74,7 +74,7 @@ const CheckboxContainer = styled.div`
 `
 
 const Checkbox = styled.input.attrs({type: 'checkbox'})`
-  
+  margin-right: 5px;
 `
 const ForgotPassword = styled.span`
     margin-top: 10px;
@@ -87,6 +87,8 @@ const Error = styled.p`
 `
 
 const Login = () => {
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
   const navigate = useNavigate()
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -100,7 +102,7 @@ const Login = () => {
   const handleClick = (e) => {
     e.preventDefault();
     dispatch(loginStart())
-    axios.post("http://3.69.101.106:3080/api/auth/login", {
+    axios.post(apiUrl+'/auth/login', {
       email: username,
       password: password
     })

@@ -6,9 +6,9 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import styled from 'styled-components';
 import ProjectCard from '../components/ProjectCard';
 import CreateProjectModal from '../components/CreateProjectModal';
+
 const PageContainer = styled.div`
   justify-content: center;
-  z-index: -1;
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -27,10 +27,13 @@ const CardContainer = styled.div`
 `
 
 const Projects = () => {
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
   const user = useSelector((state)=> state.user.currentUser)
   const token = useSelector((state) => state.user.jwt)
   const [projects, setProjects] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
   const handleCloseForm = () => setShowCreateForm(false);
   const handleShowForm = () => setShowCreateForm(true);
 
@@ -38,12 +41,14 @@ const Projects = () => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = 'http://3.69.101.106:3080/api/projects/find/'+ user._id
-    console.log(path)
+    const path = apiUrl+'/projects/find/'+ user._id
     axios.get(path, config)
       .then(response => {
         setProjects(response.data);
-        console.log(response.data)
+        if(response.data.length === 0)
+        {
+          setIsEmpty(true)
+        }
       })
       .catch(error => {
         console.log(error);
@@ -58,17 +63,24 @@ const Projects = () => {
     }
      <CreateProjectModal show={showCreateForm} onHide={handleCloseForm}/>
     <CardContainer>
-      {projects.map((item,index) => (
-        <ProjectCard 
-        _id = {item._id}
-        title={item.title}
-        description = {item.description}
-        start_date = {item.start_date}
-        end_date = {item.end_date}
-        index= {index}
+    {projects.map((item, index) => {
+    const project = {
+      _id: item._id,
+      title: item.title,
+      description: item.description,
+      start_date: item.start_date,
+      end_date: item.end_date
+    };
+    return (
+      <ProjectCard
+        project={project}
+        index={index}
         key={index}
-        />
-      ))}
+      />
+    );
+  })}
+      {isEmpty &&
+      <div style={{fontSize: "30px"}}>There are no projects to show!</div>}
       </CardContainer>
       </PageContainer>
     </>

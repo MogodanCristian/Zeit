@@ -12,7 +12,9 @@ const Error = styled.span`
 `
 
 const CreateProjectModal = ({ show, onHide }) => {
-  const today = new Date().toISOString().substr(0, 10);
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
+  const today = new Date().toISOString().split('T')[0]
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState(today);
@@ -42,7 +44,7 @@ const CreateProjectModal = ({ show, onHide }) => {
       const config = {
         headers: { 'auth-token': token }
       };
-      const path = 'http://3.69.101.106:3080/api/projects/'+user._id
+      const path = apiUrl+'/projects/'+user._id
       console.log(path)
       axios.post(path,{
         title: title,

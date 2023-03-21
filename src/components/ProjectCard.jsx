@@ -9,11 +9,16 @@ import { useSelector } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import EditProjectModal from './EditProjectModal';
+import { useNavigate } from 'react-router-dom';
 
 function formatDate(dateString) {
-  const startDate = dateString.substr(0, 10); // extract date
+  const startDate = new Date(dateString.substr(0, 10)).toLocaleString('en-US', {
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+  })
   const startTime = dateString.slice(11, 16);
-  return startDate + " " + startTime
+  return startDate + ", " + startTime
 }
 
 
@@ -55,9 +60,12 @@ const StyledDropdownButton = styled(DropdownButton)`
   }
 `;
 
-const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
+const ProjectCard = ({project,index}) => {
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
-
+  const navigate = useNavigate()
+  const user = useSelector((state)=> state.user.currentUser)
   const [bgColor, setBgColor] = useState(`hsl(${Math.floor(Math.random() * 360)}, ${Math.floor(Math.random() * 70) + 30}%, ${Math.floor(Math.random() * 40) + 10}%)`);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -72,7 +80,7 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = 'http://3.69.101.106:3080/api/projects/'+ _id
+    const path = apiUrl+'/projects/'+ project._id
     axios.delete(path, config).then(response => {
       console.log(response);
       window.location.reload();
@@ -87,22 +95,23 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
       style={{ width: '18rem', backgroundColor: bgColor }}
       className="mb-2"
     >
-      <StyledCard.Header>
-        <StyledDropdownButton id="dropdown-basic-button" title={'Options'}>
+      <StyledCard.Header style={{flexDirection: "row", display:'flex', justifyContent:'space-between'}}>
+        {index+1}. 
+       {user.role === 'manager' && <StyledDropdownButton id="dropdown-basic-button" title={'Options'}>
           <Dropdown.Item onClick={handleShowEdit}>Edit...</Dropdown.Item>
           <Dropdown.Item onClick={handleShowDelete}>Delete</Dropdown.Item>
-        </StyledDropdownButton>
+        </StyledDropdownButton>}
       </StyledCard.Header>
-      <StyledCard.Body>
-        <StyledCard.Title>{title} </StyledCard.Title>
+      <StyledCard.Body onClick={()=>{navigate('/projects/'+project._id + '/'+ project.title + '/buckets')}}>
+        <StyledCard.Title>{project.title} </StyledCard.Title>
         <StyledCard.Text>
-          {description}
+          {project.description}
         </StyledCard.Text>
         <StyledCard.Text>
-          Start Date: {formatDate(start_date)}
+          Start Date: {formatDate(project.start_date)}
         </StyledCard.Text>
         <StyledCard.Text>
-          End Date: {formatDate(end_date)}
+          End Date: {formatDate(project.end_date)}
         </StyledCard.Text>
       </StyledCard.Body>
 
@@ -123,11 +132,11 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
       <EditProjectModal 
         show={showEditModal} 
         onHide={handleCloseEdit} 
-        defaultTitle={title} 
-        defaultDescription={description} 
-        defaultStartDateTime={start_date}
-        defaultEndDateTime={end_date}
-        _id={_id}/>
+        defaultTitle={project.title} 
+        defaultDescription={project.description} 
+        defaultStartDateTime={project.start_date}
+        defaultEndDateTime={project.end_date}
+        _id={project._id}/>
     </StyledCard>
   );
 };
