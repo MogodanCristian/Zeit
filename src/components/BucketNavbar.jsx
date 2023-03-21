@@ -1,11 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-
+import { useSelector } from 'react-redux';
+import AddEmployeeModal from '../components/AddEmployeeModal';
 
 const BucketNavbar = ({title}) => {
+  const user = useSelector((state)=> state.user.currentUser)
+
+  const [showAddEmployeeModal, setShowAddEmployeeModal]=useState(false)
+
+  const handleCloseAddEmployee = () => setShowAddEmployeeModal(false);
+  const handleShowAddEmployee = () => setShowAddEmployeeModal(true);
   return (
+    <>
     <Navbar bg="light" variant="light">
         <Container>
           <Navbar.Brand>{title}</Navbar.Brand>
@@ -13,10 +21,13 @@ const BucketNavbar = ({title}) => {
             <Nav.Link>Board</Nav.Link>
             <Nav.Link>Grid</Nav.Link>
             <Nav.Link>Charts</Nav.Link>
-            <Nav.Link>Add Employees</Nav.Link>
+            {user.role === 'manager' && <Nav.Link onClick={handleShowAddEmployee}>Add Employees</Nav.Link>}
+            {user.role === 'manager' && <Nav.Link>List Employees</Nav.Link>}
           </Nav>
         </Container>
       </Navbar>
+      <AddEmployeeModal show={showAddEmployeeModal} onHide={handleCloseAddEmployee}/>
+     </>
   )
 }
 

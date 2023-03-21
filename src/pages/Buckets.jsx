@@ -7,6 +7,7 @@ import axios from 'axios';
 import Bucket from '../components/Bucket';
 import BucketNavbar from '../components/BucketNavbar';
 
+
 const PageContainer = styled.div`
   justify-content: center;
   display: flex;
@@ -66,11 +67,13 @@ const Buckets = () => {
   const projectID = getProjectID()
   const projectTitle = getProjectTitle()
   const token = useSelector((state) => state.user.jwt)
-  const user = useSelector((state)=> state.user.currentUser)
   const [buckets, setBuckets] = useState([]);
   const [showCreateBucketModal, setShowCreateBucketModal]=useState(false)
+  
   const handleCloseCreateBucket = () => setShowCreateBucketModal(false);
   const handleShowCreateBucket = () => setShowCreateBucketModal(true);
+
+  
 
   useEffect(() => {
     const config = {
@@ -104,6 +107,7 @@ const Buckets = () => {
       </BucketContainer>
     </PageContainer>
     <CreateBucketModal show={showCreateBucketModal} onHide={handleCloseCreateBucket} projectID={projectID}/>
+    
     </>
   );
 }

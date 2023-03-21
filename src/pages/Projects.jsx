@@ -63,17 +63,22 @@ const Projects = () => {
     }
      <CreateProjectModal show={showCreateForm} onHide={handleCloseForm}/>
     <CardContainer>
-      {projects.map((item,index) => (
-        <ProjectCard 
-        _id = {item._id}
-        title={item.title}
-        description = {item.description}
-        start_date = {item.start_date}
-        end_date = {item.end_date}
-        index= {index}
+    {projects.map((item, index) => {
+    const project = {
+      _id: item._id,
+      title: item.title,
+      description: item.description,
+      start_date: item.start_date,
+      end_date: item.end_date
+    };
+    return (
+      <ProjectCard
+        project={project}
+        index={index}
         key={index}
-        />
-      ))}
+      />
+    );
+  })}
       {isEmpty &&
       <div style={{fontSize: "30px"}}>There are no projects to show!</div>}
       </CardContainer>

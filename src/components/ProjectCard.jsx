@@ -60,7 +60,7 @@ const StyledDropdownButton = styled(DropdownButton)`
   }
 `;
 
-const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
+const ProjectCard = ({project,index}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
@@ -80,7 +80,7 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = apiUrl+'/projects/'+ _id
+    const path = apiUrl+'/projects/'+ project._id
     axios.delete(path, config).then(response => {
       console.log(response);
       window.location.reload();
@@ -102,16 +102,16 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
           <Dropdown.Item onClick={handleShowDelete}>Delete</Dropdown.Item>
         </StyledDropdownButton>}
       </StyledCard.Header>
-      <StyledCard.Body onClick={()=>{navigate('/projects/'+_id + '/'+ title + '/buckets')}}>
-        <StyledCard.Title>{title} </StyledCard.Title>
+      <StyledCard.Body onClick={()=>{navigate('/projects/'+project._id + '/'+ project.title + '/buckets')}}>
+        <StyledCard.Title>{project.title} </StyledCard.Title>
         <StyledCard.Text>
-          {description}
+          {project.description}
         </StyledCard.Text>
         <StyledCard.Text>
-          Start Date: {formatDate(start_date)}
+          Start Date: {formatDate(project.start_date)}
         </StyledCard.Text>
         <StyledCard.Text>
-          End Date: {formatDate(end_date)}
+          End Date: {formatDate(project.end_date)}
         </StyledCard.Text>
       </StyledCard.Body>
 
@@ -132,11 +132,11 @@ const ProjectCard = ({_id,title, description, start_date, end_date, index}) => {
       <EditProjectModal 
         show={showEditModal} 
         onHide={handleCloseEdit} 
-        defaultTitle={title} 
-        defaultDescription={description} 
-        defaultStartDateTime={start_date}
-        defaultEndDateTime={end_date}
-        _id={_id}/>
+        defaultTitle={project.title} 
+        defaultDescription={project.description} 
+        defaultStartDateTime={project.start_date}
+        defaultEndDateTime={project.end_date}
+        _id={project._id}/>
     </StyledCard>
   );
 };
