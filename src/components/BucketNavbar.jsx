@@ -27,7 +27,7 @@ const BucketNavbar = ({title}) => {
             <Nav.Link>Grid</Nav.Link>
             <Nav.Link>Charts</Nav.Link>
             {user.role === 'manager' && <Nav.Link onClick={handleShowAddEmployee}>Add Employees</Nav.Link>}
-            {user.role === 'manager' && <Nav.Link onClick={handleShowEmployeesModal}>List Employees</Nav.Link>}
+           <Nav.Link onClick={handleShowEmployeesModal}>List Employees</Nav.Link>
           </Nav>
         </Container>
       </Navbar>

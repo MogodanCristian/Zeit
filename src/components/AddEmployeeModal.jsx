@@ -44,10 +44,11 @@ const AddEmployeeModal = ({ show, onHide}) => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = 'http://localhost:3000/api/users/availableEmployees/'+projectID
+    const path = 'http://localhost:3000/api/users/availableEmployees/'+projectID;
     axios.get(path, config)
       .then(response => {
-        setAllEmployees(response.data);
+        const employeesWithAddedField = response.data.map(employee => ({ ...employee, added: false }));
+        setAllEmployees(employeesWithAddedField);
       })
       .catch(error => {
         console.error(error);
@@ -68,7 +69,19 @@ const AddEmployeeModal = ({ show, onHide}) => {
     }
   };
   const handleAddClick = (index, employee_id) => {
-    setClickedIndexes([...clickedIndexes, index]);
+    const updatedEmployees = [...displayedEmployees];
+    updatedEmployees[index] = { ...updatedEmployees[index], added: true };
+    setDisplayedEmployees(updatedEmployees);
+
+    const updatedAllEmployees = allEmployees.map((employee) => {
+      if (employee._id === employee_id) {
+        return { ...employee, added: true };
+      } else {
+        return employee;
+      }
+    });
+    setAllEmployees(updatedAllEmployees);
+
     const config = {
       headers: { 'auth-token': token }
     };
@@ -84,8 +97,9 @@ const AddEmployeeModal = ({ show, onHide}) => {
 
   return (
     <Modal show={show} onHide={() => {
-      if (clickedIndexes.length !== 0) {
-        window.location.reload()
+      const employeeAdded = allEmployees.some((employee) => employee.added);
+      if (employeeAdded) {
+        window.location.reload();
       }
       setDisplayedEmployees([])
       onHide()
@@ -104,7 +118,7 @@ const AddEmployeeModal = ({ show, onHide}) => {
             <EmployeeBox key={index}>
               <div>{employee.first_name} {employee.last_name}</div>
               {
-                clickedIndexes.includes(index) ? (
+                employee.added ? (
                 <span style={{color:'green'}}>✓ Added</span>
               ) : (
                 <Button variant="primary" size="sm" onClick={() => handleAddClick(index, employee._id)}>Add</Button>
@@ -115,8 +129,9 @@ const AddEmployeeModal = ({ show, onHide}) => {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => {
-          if (clickedIndexes.length !== 0) {
-            window.location.reload()
+          const employeeAdded = allEmployees.some((employee) => employee.added);
+          if (employeeAdded) {
+            window.location.reload();
           }
           setDisplayedEmployees([])
           onHide()

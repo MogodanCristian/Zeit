@@ -27,6 +27,7 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
   const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt)
   const projectID = getProjectID()
+  const [project, setProject] = useState("")
   const [employees, setEmployees] = useState([]);
   const [clickedIndexes, setClickedIndexes] = useState([]);
   const user = useSelector((state) => state.user.currentUser);
@@ -44,6 +45,10 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
       .catch(error => {
         console.error(error);
       });
+      axios.get('http://localhost:3000/api/projects/'+ projectID, config)
+      .then(response =>{
+        setProject(response.data)
+      })
   }, []);
 
   const handleRemoveClick = (index, employee_id) => {
@@ -76,16 +81,18 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
       </Modal.Header>
       <Modal.Body>
         {employees.map((employee, index) => (
-  <EmployeeBox key={index}>
-    <div>{employee.first_name} {employee.last_name}</div>
-    {clickedIndexes.includes(index) ? (
-      <span style={{color:'red'}}>Removed</span>
-    ) : (
-      (employee._id !== user._id) && 
-      <Button variant="primary" size="sm" onClick={() => handleRemoveClick(index, employee._id)}>Remove</Button>
-    )}
-  </EmployeeBox>
-))}
+          <EmployeeBox key={index}>
+            <div>{employee.first_name} {employee.last_name}</div>
+            {clickedIndexes.includes(index) ? (
+              <span style={{color:'red'}}>Removed</span>
+            ) : (
+              employee._id === project.manager_id ? <span>Manager</span> :
+              (user.role === 'manager' && (
+                <Button variant="primary" size="sm" onClick={() => handleRemoveClick(index, employee._id)}>Remove</Button>
+              ))
+            )}
+          </EmployeeBox>
+        ))}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() =>{

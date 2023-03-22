@@ -65,6 +65,7 @@ const Buckets = () => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const projectID = getProjectID()
+  const user = useSelector((state) => state.user.currentUser);
   const projectTitle = getProjectTitle()
   const token = useSelector((state) => state.user.jwt)
   const [buckets, setBuckets] = useState([]);
@@ -93,9 +94,9 @@ const Buckets = () => {
     <>
     <PageContainer>
       <BucketNavbar title={projectTitle}/>
-      <ButtonContainer>
+      {user.role === 'manager' && <ButtonContainer>
         <StyledButton onClick={handleShowCreateBucket}>Create Bucket</StyledButton>
-      </ButtonContainer>
+      </ButtonContainer>}
       <BucketContainer>
         {buckets.map((item,index) =>(
           <Bucket
