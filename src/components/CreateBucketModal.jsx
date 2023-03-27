@@ -23,6 +23,7 @@ const CreateBucketModal = ({show, onHide,projectID, onBucketCreated}) => {
     axios.post(path, { title: title }, config)
     .then(response => {
       onHide();
+      setTitle("")
       onBucketCreated(response.data)
     })
     .catch(error => {

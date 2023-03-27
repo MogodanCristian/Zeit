@@ -42,6 +42,10 @@ const Projects = () => {
     setProjects([...projects, newProject]);
   };
 
+  const handleProjectDeletion = (projectID) =>{
+    setProjects(projects.filter(project=> project._id !== projectID))
+  }
+
   useEffect(() => {
     const config = {
       headers: { 'auth-token': token }
@@ -81,6 +85,7 @@ const Projects = () => {
         project={project}
         index={index}
         key={index}
+        onDelete={handleProjectDeletion}
       />
     );
   })}

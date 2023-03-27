@@ -28,7 +28,7 @@ const StyledButton = styled(Button)`
     width: 100%;
 `
 
-const CreateTaskForm = ({bucketID, onTaskCreated }) => {
+const CreateTaskForm = ({bucketID, onTaskCreated, onHide}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);

@@ -60,7 +60,7 @@ const StyledDropdownButton = styled(DropdownButton)`
   }
 `;
 
-const ProjectCard = ({project,index}) => {
+const ProjectCard = ({project,index, onDelete}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
@@ -82,8 +82,8 @@ const ProjectCard = ({project,index}) => {
     };
     const path = apiUrl+'/projects/'+ project._id
     axios.delete(path, config).then(response => {
-      console.log(response);
-      window.location.reload();
+      onDelete(project._id)
+      handleCloseDelete()
     }).catch(error => {
       console.log(error);
     });

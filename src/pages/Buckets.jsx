@@ -78,6 +78,10 @@ const Buckets = () => {
     setBuckets([...buckets, newBucket])
   }
 
+  const handleBucketDeletion = (bucketID) =>{
+    setBuckets(buckets.filter(bucket => bucket._id !== bucketID))
+  }
+
   useEffect(() => {
     const config = {
       headers: { 'auth-token': token }
@@ -105,11 +109,16 @@ const Buckets = () => {
           title={item.title}
           _id={item._id}
           key={index}
+          onDelete = {handleBucketDeletion}
           />
         ))}
       </BucketContainer>
     </PageContainer>
-    <CreateBucketModal show={showCreateBucketModal} onHide={handleCloseCreateBucket} projectID={projectID} onBucketCreated={handleBucketCreated}/>
+    <CreateBucketModal 
+      show={showCreateBucketModal} 
+      onHide={handleCloseCreateBucket} 
+      projectID={projectID} 
+      onBucketCreated={handleBucketCreated}/>
     
     </>
   );

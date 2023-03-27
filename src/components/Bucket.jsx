@@ -1,12 +1,10 @@
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Modal from 'react-bootstrap/Modal';
 import { Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import EditBucketModal from './EditBucketModal';
 import Task from './Task';
 import ThreeDotsToggle from './ThreeDotsToggle';
 import CreateTaskForm from './CreateTaskForm';
@@ -42,6 +40,22 @@ const Title = styled.h1`
   white-space: nowrap;
   overflow: hidden;
 `;
+const EditingTitle = styled.input`
+   font-size: 24px;
+   font-weight: 300;
+   margin: 10px;
+   max-width: 200px;
+   border: none;
+   background-color: transparent;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+   overflow: hidden;
+   
+   &:focus {
+     outline: none;
+     border: none;
+   }
+`;
 
 const Separator = styled.div`
   width: 100%;
@@ -71,24 +85,56 @@ const AddTask = styled.button`
 
 const TaskContainer = styled.div`
 `
-const Bucket = ({ title, _id}) => {
+const Bucket = ({ title, _id, onDelete}) => {
+  const inputRef = useRef(null);
+
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [tasks, setTasks] = useState([]);
-
+  const [editClicked, setEditClicked] = useState(false);
   const [showCreateTaskForm, setShowCreateTaskForm] = useState(false);
-
-  const handleCloseEdit = () => setShowEditModal(false);
-  const handleShowEdit = () => setShowEditModal(true);
+  const [newTitle, setNewTitle] = useState(title);
 
   const handleCloseDelete = () => setShowConfirmDeleteModal(false);
   const handleShowDelete = () => setShowConfirmDeleteModal(true);
 
+  const handleShowCreateTaskForm = () => setShowCreateTaskForm(true)
+  const handleCloseCreateTaskForm = () => setShowCreateTaskForm(false)
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      updateTitle();
+      setEditClicked(false);
+    }
+  };
+
+  const updateTitle = () => {
+    const config = {
+      headers: { 'auth-token': token }
+    };
+    const path = apiUrl+'/buckets/'+ _id;
+    const body = {
+      title: newTitle
+    };
+    axios.put(path, body, config).then(response => {
+      console.log(response)
+    }).catch(error => {
+      console.log(error);
+    });
+  };
+
   const handleTaskCreated = (newTask) => {
     setTasks([...tasks, newTask]);
+    handleCloseCreateTaskForm()
+  };
+
+  const handleBlur = () => {
+    setEditClicked(false);
+    if (newTitle !== title) {
+      updateTitle();
+    }
   };
 
   useEffect(() => {
@@ -98,7 +144,6 @@ const Bucket = ({ title, _id}) => {
     const path = apiUrl+'/tasks/getTasks/'+ _id
     axios.get(path, config)
       .then(response => {
-        console.log(response.data)
         setTasks(response.data);
       })
       .catch(error => {
@@ -106,35 +151,51 @@ const Bucket = ({ title, _id}) => {
       });
   }, [_id])
 
+  useEffect(() => {
+    if (editClicked) {
+      inputRef.current.focus();
+    }
+  }, [editClicked]);
+
     const handleDelete = () => {
     const config = {
       headers: { 'auth-token': token }
     };
     const path = apiUrl+'/buckets/'+ _id
     axios.delete(path, config).then(response => {
-      console.log(response);
-      window.location.reload();
+      onDelete(_id)
+      handleCloseDelete()
     }).catch(error => {
       console.log(error);
     });
   };
+
+  const handleEdit = () => {
+    setEditClicked(true)
+  }
   
+  const handleTitleChange = (e) => {
+    setNewTitle(e.target.value);
+  };
+
   return (
     <>
     <Container>
       <TitleContainer>
-        <Title>{title}</Title>
+        {editClicked ? 
+        (<EditingTitle onKeyDown={handleKeyPress} defaultValue={title} ref={inputRef} onBlur={handleBlur} onChange={handleTitleChange}/>) : 
+        (<Title>{newTitle}</Title>)}
         <Dropdown drop="left">
           <Dropdown.Toggle as={ThreeDotsToggle} />
           <Dropdown.Menu size="sm" title="" align="end" >
-            <Dropdown.Item onClick={handleShowEdit}>Edit...</Dropdown.Item>
+            <Dropdown.Item onClick={handleEdit}>Edit...</Dropdown.Item>
             <Dropdown.Item onClick={handleShowDelete}>Delete</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
       </TitleContainer>
       <Separator />
-      <AddTask onClick={() =>{setShowCreateTaskForm(!showCreateTaskForm)}}>+ Add task</AddTask>
-      {showCreateTaskForm && <CreateTaskForm bucketID={_id} onTaskCreated={handleTaskCreated}/>}
+      <AddTask onClick={handleShowCreateTaskForm}>+ Add task</AddTask>
+      {showCreateTaskForm && <CreateTaskForm bucketID={_id} onTaskCreated={handleTaskCreated} onHide={handleCloseCreateTaskForm}/>}
       <TaskContainer>
         {
           tasks.map((item,index) => (
@@ -159,12 +220,6 @@ const Bucket = ({ title, _id}) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      
-      <EditBucketModal 
-        show={showEditModal} 
-        onHide={handleCloseEdit} 
-        defaultTitle={title} 
-        _id={_id}/>
     </Container>
     </>
   );
