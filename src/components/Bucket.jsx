@@ -9,24 +9,28 @@ import axios from 'axios';
 import EditBucketModal from './EditBucketModal';
 import Task from './Task';
 import ThreeDotsToggle from './ThreeDotsToggle';
+import CreateTaskForm from './CreateTaskForm';
 
 const Container = styled.div`
   display: inline-block;
-  width: 250px;
+  width: 300px;
   height: 60vh;
-  background-color:lightblue;
+  background-color:transparent;
   overflow-y: auto;
   margin-left: 30px;
   vertical-align: top;
   &:last-child {
     margin-right: 30px;
   }
+  border-radius: 5px;
+  padding:10px;
 `;
 
 const TitleContainer = styled.div`
-  display: flex;
+   display: flex;
   align-items: center;
   justify-content:space-between;
+  padding: 0 10px;
 `;
 
 const Title = styled.h1`
@@ -47,6 +51,24 @@ const Separator = styled.div`
   margin-bottom: 10px;
 `;
 
+const AddTask = styled.button`
+  width: 100%;
+  height: 30px;
+  background-color: gray;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.25);
+
+
+  &:hover {
+    background-color: #333;
+  }
+`;
+
 const TaskContainer = styled.div`
 `
 const Bucket = ({ title, _id}) => {
@@ -56,11 +78,18 @@ const Bucket = ({ title, _id}) => {
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [tasks, setTasks] = useState([]);
+
+  const [showCreateTaskForm, setShowCreateTaskForm] = useState(false);
+
   const handleCloseEdit = () => setShowEditModal(false);
   const handleShowEdit = () => setShowEditModal(true);
 
   const handleCloseDelete = () => setShowConfirmDeleteModal(false);
   const handleShowDelete = () => setShowConfirmDeleteModal(true);
+
+  const handleTaskCreated = (newTask) => {
+    setTasks([...tasks, newTask]);
+  };
 
   useEffect(() => {
     const config = {
@@ -77,7 +106,7 @@ const Bucket = ({ title, _id}) => {
       });
   }, [_id])
 
-  const handleDelete = () => {
+    const handleDelete = () => {
     const config = {
       headers: { 'auth-token': token }
     };
@@ -104,6 +133,8 @@ const Bucket = ({ title, _id}) => {
         </Dropdown>
       </TitleContainer>
       <Separator />
+      <AddTask onClick={() =>{setShowCreateTaskForm(!showCreateTaskForm)}}>+ Add task</AddTask>
+      {showCreateTaskForm && <CreateTaskForm bucketID={_id} onTaskCreated={handleTaskCreated}/>}
       <TaskContainer>
         {
           tasks.map((item,index) => (
