@@ -74,7 +74,9 @@ const Buckets = () => {
   const handleCloseCreateBucket = () => setShowCreateBucketModal(false);
   const handleShowCreateBucket = () => setShowCreateBucketModal(true);
 
-  
+  const handleBucketCreated = (newBucket) =>{
+    setBuckets([...buckets, newBucket])
+  }
 
   useEffect(() => {
     const config = {
@@ -107,7 +109,7 @@ const Buckets = () => {
         ))}
       </BucketContainer>
     </PageContainer>
-    <CreateBucketModal show={showCreateBucketModal} onHide={handleCloseCreateBucket} projectID={projectID}/>
+    <CreateBucketModal show={showCreateBucketModal} onHide={handleCloseCreateBucket} projectID={projectID} onBucketCreated={handleBucketCreated}/>
     
     </>
   );

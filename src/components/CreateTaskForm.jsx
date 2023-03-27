@@ -44,9 +44,7 @@ const CreateTaskForm = ({bucketID, onTaskCreated }) => {
     const config = {
       headers: { 'auth-token': token }
     };
-    // const path = apiUrl+'/tasks/'+ bucketID
-    console.log(bucketID)
-    const path = 'http://localhost:3000/api/tasks/'+bucketID
+    const path = apiUrl+'/tasks/'+ bucketID
     axios.post(path, {
        title: title,
        priority: priority

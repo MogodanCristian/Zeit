@@ -37,7 +37,7 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
       headers: { 'auth-token': token }
     };
     // const path = apiUrl+'/users/' 
-    const path = 'http://localhost:3000/api/projects/'+ projectID +'/employees'
+    const path = apiUrl + '/projects/'+ projectID +'/employees'
     axios.get(path, config)
       .then(response => {
         setEmployees(response.data);
@@ -45,7 +45,7 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
       .catch(error => {
         console.error(error);
       });
-      axios.get('http://localhost:3000/api/projects/'+ projectID, config)
+      axios.get(apiUrl+'/projects/'+ projectID, config)
       .then(response =>{
         setProject(response.data)
       })

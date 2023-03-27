@@ -11,7 +11,7 @@ const Error = styled.span`
   color: red;
 `
 
-const CreateProjectModal = ({ show, onHide }) => {
+const CreateProjectModal = ({ show, onHide, onCreateProject}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const today = new Date().toISOString().split('T')[0]
@@ -51,9 +51,9 @@ const CreateProjectModal = ({ show, onHide }) => {
         description: description,
         start_date: startDateTime,
         end_date: endDateTime
-      }, config).then(() => {
+      }, config).then((response) => {
         onHide();
-        window.location.reload();
+        onCreateProject(response.data)
       }).catch((error) => {
         console.log(error);
       });

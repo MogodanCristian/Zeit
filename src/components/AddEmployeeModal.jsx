@@ -37,14 +37,13 @@ const AddEmployeeModal = ({ show, onHide}) => {
   const projectID = getProjectID()
   const [allEmployees, setAllEmployees] = useState([]);
   const [displayedEmployees, setDisplayedEmployees] = useState([]);
-  const [clickedIndexes, setClickedIndexes] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = 'http://localhost:3000/api/users/availableEmployees/'+projectID;
+    const path = apiUrl+'/users/availableEmployees/'+projectID;
     axios.get(path, config)
       .then(response => {
         const employeesWithAddedField = response.data.map(employee => ({ ...employee, added: false }));
