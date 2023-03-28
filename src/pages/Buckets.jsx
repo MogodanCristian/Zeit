@@ -43,7 +43,7 @@ const ButtonContainer = styled.div`
 `
 
 const StyledButton = styled(Button)`
-  margin-top: 30px;
+  margin-top: 20px;
 `
 function getProjectID() {
   const url = window.location.href;

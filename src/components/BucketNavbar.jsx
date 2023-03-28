@@ -21,7 +21,7 @@ const BucketNavbar = ({title}) => {
     <>
     <Navbar bg="light" variant="light">
         <Container>
-          <Navbar.Brand>{title}</Navbar.Brand>
+          <Navbar.Brand style={{fontSize:"25px"}}>{title}</Navbar.Brand>
           <Nav className="me-auto">
             <Nav.Link>Board</Nav.Link>
             <Nav.Link>Grid</Nav.Link>

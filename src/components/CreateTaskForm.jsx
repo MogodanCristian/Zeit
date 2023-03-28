@@ -14,6 +14,7 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
+  border: 1px solid gray;
 `;
 
 const InputGroup = styled(Form.Group)`

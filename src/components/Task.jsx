@@ -5,6 +5,7 @@ import ThreeDotsToggle from './ThreeDotsToggle';
 import MuiCheckbox from '@mui/material/Checkbox';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import TaskDetailsModal from './TaskDetailsModal';
 
 const Container = styled.div`
   display: flex;
@@ -17,7 +18,7 @@ const Container = styled.div`
   margin-top: 10px;
   border-radius: 5px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-  
+  cursor: pointer;
 `;
 
 const Title = styled.span`
@@ -28,15 +29,25 @@ const Title = styled.span`
   max-width: calc(100% - 30px);
 `;
 
-const Task = ({ title }) => {
+const Task = ({ title, _id}) => {
   const [isChecked, setIsChecked] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+
+  const showDetailsPage = () =>{
+    setShowDetails(true)
+  }
+
+  const hideDetailsPage = () =>{
+    setShowDetails(false);
+  }
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
 
   return (
-    <Container>
+    <>
+    <Container onClick={showDetailsPage}>
       <MuiCheckbox
         icon={<RadioButtonUncheckedIcon />}
         checkedIcon={<CheckCircleIcon />}
@@ -51,6 +62,8 @@ const Task = ({ title }) => {
         </Dropdown.Menu>
       </Dropdown>
     </Container>
+    {showDetails && <TaskDetailsModal show={showDetails} onHide={hideDetailsPage} _id={_id}/>}
+    </>
   );
 };
 

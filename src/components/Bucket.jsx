@@ -12,7 +12,7 @@ import CreateTaskForm from './CreateTaskForm';
 const Container = styled.div`
   display: inline-block;
   width: 300px;
-  height: 60vh;
+  height: 65vh;
   background-color:transparent;
   overflow-y: auto;
   margin-left: 30px;
@@ -22,6 +22,7 @@ const Container = styled.div`
   }
   border-radius: 5px;
   padding:10px;
+  border: 1px solid gray;
 `;
 
 const TitleContainer = styled.div`
@@ -194,7 +195,7 @@ const Bucket = ({ title, _id, onDelete}) => {
         </Dropdown>
       </TitleContainer>
       <Separator />
-      <AddTask onClick={handleShowCreateTaskForm}>+ Add task</AddTask>
+      <AddTask onClick={() =>{setShowCreateTaskForm(!showCreateTaskForm)}}>+ Add task</AddTask>
       {showCreateTaskForm && <CreateTaskForm bucketID={_id} onTaskCreated={handleTaskCreated} onHide={handleCloseCreateTaskForm}/>}
       <TaskContainer>
         {
@@ -202,6 +203,7 @@ const Bucket = ({ title, _id, onDelete}) => {
             <Task
             title={item.title}
             key={index}
+            _id={item._id}
             />
           ))
         }
