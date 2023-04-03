@@ -145,6 +145,7 @@ const Bucket = ({ title, _id, onDelete}) => {
     const path = apiUrl+'/tasks/getTasks/'+ _id
     axios.get(path, config)
       .then(response => {
+        console.log(response.data)
         setTasks(response.data);
       })
       .catch(error => {

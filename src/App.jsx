@@ -33,7 +33,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const user = useSelector((state) => state.user.currentUser);
 
-  
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem('USER_STORAGE'));
     if (loggedUser) {

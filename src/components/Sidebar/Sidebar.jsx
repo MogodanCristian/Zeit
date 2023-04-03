@@ -3,7 +3,7 @@ import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import * as IoIcons from 'react-icons/io';
 import { Link } from 'react-router-dom';
-import { SidebarData } from './SidebarData';
+import { SidebarData, SidebarDataAdmin} from './SidebarData';
 import { IconContext } from 'react-icons';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -124,6 +124,7 @@ function Sidebar() {
         dispatch(logout())
     }
 }
+  const sidebarData = user.role === 'admin' ? SidebarDataAdmin : SidebarData;
 
   return (
     <>
@@ -140,7 +141,7 @@ function Sidebar() {
                 <AiIcons.AiOutlineClose />
               </NavLink>
             </NavbarToggle>
-            {SidebarData.map((item, index) => {
+            {sidebarData.map((item, index) => {
               return (
                 <NavText key={index}>
                   <Link to={item.path}>
