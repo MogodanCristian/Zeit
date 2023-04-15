@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 
-const CreateBucketModal = ({show, onHide,projectID}) => {
+const CreateBucketModal = ({show, onHide,projectID, onBucketCreated}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
@@ -23,7 +23,8 @@ const CreateBucketModal = ({show, onHide,projectID}) => {
     axios.post(path, { title: title }, config)
     .then(response => {
       onHide();
-      window.location.reload();
+      setTitle("")
+      onBucketCreated(response.data)
     })
     .catch(error => {
       console.error('Error creating bucket:', error);

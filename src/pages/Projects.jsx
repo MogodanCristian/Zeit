@@ -34,8 +34,17 @@ const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
+
   const handleCloseForm = () => setShowCreateForm(false);
   const handleShowForm = () => setShowCreateForm(true);
+
+  const handleProjectCreated = (newProject) => {
+    setProjects([...projects, newProject]);
+  };
+
+  const handleProjectDeletion = (projectID) =>{
+    setProjects(projects.filter(project=> project._id !== projectID))
+  }
 
   useEffect(() => {
     const config = {
@@ -61,7 +70,7 @@ const Projects = () => {
     { user.role === 'manager' &&
     <StyledButton onClick={handleShowForm}>Create a new project</StyledButton>
     }
-     <CreateProjectModal show={showCreateForm} onHide={handleCloseForm}/>
+     <CreateProjectModal show={showCreateForm} onHide={handleCloseForm} onCreateProject={handleProjectCreated}/>
     <CardContainer>
     {projects.map((item, index) => {
     const project = {
@@ -76,6 +85,7 @@ const Projects = () => {
         project={project}
         index={index}
         key={index}
+        onDelete={handleProjectDeletion}
       />
     );
   })}

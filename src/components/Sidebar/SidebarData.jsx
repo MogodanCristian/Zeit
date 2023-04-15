@@ -25,3 +25,16 @@ export const SidebarData = [
   },
 
 ];
+
+export const SidebarDataAdmin = [
+  {
+    title: 'Home',
+    path: '/',
+    icon: <AiIcons.AiFillHome />,
+},
+{
+  title: 'Tools',
+  path: '/tools',
+  icon: <AiIcons.AiFillTool/>
+}                                        
+]

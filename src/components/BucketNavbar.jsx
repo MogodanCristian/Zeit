@@ -21,13 +21,13 @@ const BucketNavbar = ({title}) => {
     <>
     <Navbar bg="light" variant="light">
         <Container>
-          <Navbar.Brand>{title}</Navbar.Brand>
+          <Navbar.Brand style={{fontSize:"25px"}}>{title}</Navbar.Brand>
           <Nav className="me-auto">
             <Nav.Link>Board</Nav.Link>
             <Nav.Link>Grid</Nav.Link>
             <Nav.Link>Charts</Nav.Link>
             {user.role === 'manager' && <Nav.Link onClick={handleShowAddEmployee}>Add Employees</Nav.Link>}
-            {user.role === 'manager' && <Nav.Link onClick={handleShowEmployeesModal}>List Employees</Nav.Link>}
+           <Nav.Link onClick={handleShowEmployeesModal}>List Employees</Nav.Link>
           </Nav>
         </Container>
       </Navbar>

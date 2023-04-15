@@ -43,7 +43,7 @@ const ButtonContainer = styled.div`
 `
 
 const StyledButton = styled(Button)`
-  margin-top: 30px;
+  margin-top: 20px;
 `
 function getProjectID() {
   const url = window.location.href;
@@ -65,6 +65,7 @@ const Buckets = () => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const projectID = getProjectID()
+  const user = useSelector((state) => state.user.currentUser);
   const projectTitle = getProjectTitle()
   const token = useSelector((state) => state.user.jwt)
   const [buckets, setBuckets] = useState([]);
@@ -73,7 +74,13 @@ const Buckets = () => {
   const handleCloseCreateBucket = () => setShowCreateBucketModal(false);
   const handleShowCreateBucket = () => setShowCreateBucketModal(true);
 
-  
+  const handleBucketCreated = (newBucket) =>{
+    setBuckets([...buckets, newBucket])
+  }
+
+  const handleBucketDeletion = (bucketID) =>{
+    setBuckets(buckets.filter(bucket => bucket._id !== bucketID))
+  }
 
   useEffect(() => {
     const config = {
@@ -93,20 +100,25 @@ const Buckets = () => {
     <>
     <PageContainer>
       <BucketNavbar title={projectTitle}/>
-      <ButtonContainer>
+      {user.role === 'manager' && <ButtonContainer>
         <StyledButton onClick={handleShowCreateBucket}>Create Bucket</StyledButton>
-      </ButtonContainer>
+      </ButtonContainer>}
       <BucketContainer>
         {buckets.map((item,index) =>(
           <Bucket
           title={item.title}
           _id={item._id}
           key={index}
+          onDelete = {handleBucketDeletion}
           />
         ))}
       </BucketContainer>
     </PageContainer>
-    <CreateBucketModal show={showCreateBucketModal} onHide={handleCloseCreateBucket} projectID={projectID}/>
+    <CreateBucketModal 
+      show={showCreateBucketModal} 
+      onHide={handleCloseCreateBucket} 
+      projectID={projectID} 
+      onBucketCreated={handleBucketCreated}/>
     
     </>
   );
