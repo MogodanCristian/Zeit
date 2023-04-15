@@ -17,6 +17,7 @@ import Team from './pages/Team'
 import AdminDashboard from './pages/AdminDashboard'
 import ForgotPassword from './pages/ForgotPassword'
 import Buckets from './pages/Buckets'
+import AdminTools from './pages/AdminTools'
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
@@ -62,6 +63,7 @@ function App() {
               <Route path='/projects' element={<Projects />} />
               <Route path = '/forgotPassword' element={<ForgotPassword/>}/>
               <Route path = '/projects/:projectID/:projectTitle/buckets' element={<Buckets/>}/>
+              <Route path='/tools' element={user.role === 'admin'? <AdminTools/> : <Unauthorized/>}/>
             </>
           )}
         </Routes>
