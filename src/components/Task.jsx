@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import styled from 'styled-components';
 import ThreeDotsToggle from './ThreeDotsToggle';
@@ -29,10 +29,17 @@ const Title = styled.span`
   max-width: calc(100% - 30px);
 `;
 
-const Task = ({ title, _id}) => {
+const Task = ({ title, _id, progress}) => {
+  const [titleState, setTitleState] = useState(title)
   const [isChecked, setIsChecked] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
+  useEffect(() => {
+    if(progress === "Done"){
+      setIsChecked(true)
+    }
+  }, [])
+  
   const showDetailsPage = () =>{
     setShowDetails(true)
   }
@@ -40,19 +47,24 @@ const Task = ({ title, _id}) => {
   const hideDetailsPage = () =>{
     setShowDetails(false);
   }
-
-  const handleCheckboxChange = () => {
-    setIsChecked(!isChecked);
-  };
-
+  const handleTaskUpdate = (taskName)=>{
+    setTitleState(taskName)
+  }
+  const setToChecked = () =>{
+    setIsChecked(true)
+  }
+  const Uncheck =() =>{
+    setIsChecked(false)
+  }
   return (
     <>
-    <Container onClick={showDetailsPage}>
+    <Container >
       <MuiCheckbox
         icon={<RadioButtonUncheckedIcon />}
         checkedIcon={<CheckCircleIcon />}
+        checked={isChecked}
       />
-      <Title>{title}</Title>
+      <Title onClick={showDetailsPage}>{titleState}</Title>
       <Dropdown drop="left">
         <Dropdown.Toggle as={ThreeDotsToggle} />
         <Dropdown.Menu size="sm" title="" align="end">
@@ -62,7 +74,13 @@ const Task = ({ title, _id}) => {
         </Dropdown.Menu>
       </Dropdown>
     </Container>
-    {showDetails && <TaskDetailsModal show={showDetails} onHide={hideDetailsPage} _id={_id}/>}
+    {showDetails && <TaskDetailsModal 
+      show={showDetails} 
+      onHide={hideDetailsPage} 
+      _id={_id} 
+      handleTaskUpdate={handleTaskUpdate}
+      handleCheck={setToChecked}
+      uncheck={Uncheck}/>}
     </>
   );
 };

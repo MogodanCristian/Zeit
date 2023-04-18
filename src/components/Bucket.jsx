@@ -205,6 +205,7 @@ const Bucket = ({ title, _id, onDelete}) => {
             title={item.title}
             key={index}
             _id={item._id}
+            progress={item.progress}
             />
           ))
         }

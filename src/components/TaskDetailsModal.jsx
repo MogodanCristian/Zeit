@@ -14,7 +14,7 @@ const FormRow = styled.div`
   margin-top: 10px;
 `;
 
-const TaskDetailsModal = ({show, onHide, _id}) => {
+const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, uncheck}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   
@@ -23,12 +23,8 @@ const TaskDetailsModal = ({show, onHide, _id}) => {
   
   const [task, setTask] = useState(null)
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState('Low');
   const [progress, setProgress] = useState('Not Started');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [repeat, setRepeat] = useState('does not repeat');
+  const [isModified, setIsModified] = useState(false)
   
   useEffect(() => {
     const config = {
@@ -45,8 +41,38 @@ const TaskDetailsModal = ({show, onHide, _id}) => {
         console.error(error);
       });
   }, []);
+
+  const handleSaveChanges = () => {
+    if(isModified)
+      {
+        handleTaskUpdate(title);
+      }
+    if(progress === "Done")
+    {
+      handleCheck()
+    }
+    else{
+      uncheck()
+    }
+    const config = {
+      headers: { 'auth-token': token }
+    };
+    const path = apiUrl+'/tasks/' + _id;
+
+    axios.put(path, task, config)
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} onHide={()=>{
+      handleSaveChanges()
+      onHide()
+    }}>
       <Modal.Header closeButton>
         <Modal.Title>Task Details</Modal.Title>
       </Modal.Header>
@@ -58,7 +84,11 @@ const TaskDetailsModal = ({show, onHide, _id}) => {
         <Form.Control
           type="text"
           defaultValue={task[0].title}
-          onChange={(e) => setTask({ ...task, title: e.target.value })}
+          onChange={(e) => {
+            setTask({ ...task, title: e.target.value })
+            setIsModified(true)
+            setTitle(e.target.value)
+          }}
         />
       </Form.Group>
       <Form.Group>
@@ -67,15 +97,20 @@ const TaskDetailsModal = ({show, onHide, _id}) => {
           as={"textarea"}
           rows={2}
           defaultValue={task[0].description}
-          onChange={(e) =>
+          onChange={(e) =>{
             setTask({ ...task, description: e.target.value })
+            console.log(task)
+          }
           }
         />
       </Form.Group>
-      <FormRow>
+
+      <FormRow style={{marginBottom:"30px"}}>
         <Form.Group style={{ width: "48%" }}>
           <Form.Label>Priority:</Form.Label>
-          <Form.Select aria-label="Priority" value={priority} onChange={(e) => setPriority(e.target.value)}>
+          <Form.Select aria-label="Priority" defaultValue={task[0].priority} onChange={(e) => {
+            setTask({ ...task, priority: e.target.value })
+          }}>
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
@@ -84,9 +119,14 @@ const TaskDetailsModal = ({show, onHide, _id}) => {
         </Form.Group>
         <Form.Group style={{ width: "48%" }}>
           <Form.Label>Progress:</Form.Label>
-          <Form.Select aria-label="Progress">
+          <Form.Select aria-label="Progress" defaultValue={task[0].progress} onChange={(e) => {
+            setTask({ ...task, progress: e.target.value })
+            setProgress(e.target.value)
+          }
+        }>
             <option value="Not Started">Not Started</option>
             <option value="In Progress">In Progress</option>
+            <option value="Stuck">Stuck</option>
             <option value="Done">Done</option>
           </Form.Select>
         </Form.Group>
@@ -125,9 +165,6 @@ const TaskDetailsModal = ({show, onHide, _id}) => {
             <Form.Control type="time" defaultValue="00:00"/>
         </Form.Group>
         </FormRow>
-        {user.role === 'employee' && <FormRow>
-          <Button>Ask for help...</Button>
-        </FormRow>}
     </Form>
   ) : (
     <p>Loading...</p>
@@ -135,7 +172,10 @@ const TaskDetailsModal = ({show, onHide, _id}) => {
   </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>Close</Button>
+        <Button variant="secondary" onClick={()=>{
+          handleSaveChanges()
+          onHide()
+        }}>Close</Button>
       </Modal.Footer>
     </Modal>
   )
