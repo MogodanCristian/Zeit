@@ -6,6 +6,8 @@ import MuiCheckbox from '@mui/material/Checkbox';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TaskDetailsModal from './TaskDetailsModal';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
 
 const Container = styled.div`
   display: flex;
@@ -30,6 +32,12 @@ const Title = styled.span`
 `;
 
 const Task = ({ title, _id, progress}) => {
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
+  
+  const token = useSelector((state) => state.user.jwt)
+  const user = useSelector((state) => state.user.currentUser);
+
   const [titleState, setTitleState] = useState(title)
   const [isChecked, setIsChecked] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -52,9 +60,37 @@ const Task = ({ title, _id, progress}) => {
   }
   const setToChecked = () =>{
     setIsChecked(true)
+    const config = {
+      headers: { 'auth-token': token }
+    };
+    const path = apiUrl+'/tasks/' + _id;
+
+    axios.put(path,{
+      completed_by: user
+    }, config)
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
   const Uncheck =() =>{
     setIsChecked(false)
+    const config = {
+      headers: { 'auth-token': token }
+    };
+    const path = apiUrl+'/tasks/' + _id;
+
+    axios.put(path,{
+      completed_by: null
+    }, config)
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
   return (
     <>
@@ -64,11 +100,10 @@ const Task = ({ title, _id, progress}) => {
         checkedIcon={<CheckCircleIcon />}
         checked={isChecked}
       />
-      <Title onClick={showDetailsPage}>{titleState}</Title>
+      <Title style={{textDecoration: isChecked? 'line-through' : 'none'}} onClick={showDetailsPage}>{titleState}</Title>
       <Dropdown drop="left">
         <Dropdown.Toggle as={ThreeDotsToggle} />
         <Dropdown.Menu size="sm" title="" align="end">
-          <Dropdown.Item>Edit...</Dropdown.Item>
           <Dropdown.Item>Delete</Dropdown.Item>
           <Dropdown.Item>Move</Dropdown.Item>
         </Dropdown.Menu>
@@ -80,7 +115,7 @@ const Task = ({ title, _id, progress}) => {
       _id={_id} 
       handleTaskUpdate={handleTaskUpdate}
       handleCheck={setToChecked}
-      uncheck={Uncheck}/>}
+      Uncheck={Uncheck}/>}
     </>
   );
 };

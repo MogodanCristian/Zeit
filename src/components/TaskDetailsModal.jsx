@@ -14,7 +14,17 @@ const FormRow = styled.div`
   margin-top: 10px;
 `;
 
-const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, uncheck}) => {
+const EmployeeBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-bottom: 10px;
+`
+
+const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Uncheck}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   
@@ -25,6 +35,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, unc
   const [title, setTitle] = useState('');
   const [progress, setProgress] = useState('Not Started');
   const [isModified, setIsModified] = useState(false)
+  const [completedBy, setCompletedBy] = useState(null)
   
   useEffect(() => {
     const config = {
@@ -35,7 +46,16 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, unc
     axios.get(path, config)
       .then(response => {
         setTask(response.data)
-
+        setProgress(response.data[0].progress)
+        const completedByUser = response.data[0].completed_by
+        const userDetailsPath = apiUrl + '/users/getDetails/' + completedByUser
+        axios.get(userDetailsPath, config)
+        .then(userResponse => {
+          setCompletedBy(userResponse.data)
+        })
+        .catch(userError => {
+          console.error(userError);
+        });
       })
       .catch(error => {
         console.error(error);
@@ -43,6 +63,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, unc
   }, []);
 
   const handleSaveChanges = () => {
+    console.log(completedBy)
     if(isModified)
       {
         handleTaskUpdate(title);
@@ -52,7 +73,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, unc
       handleCheck()
     }
     else{
-      uncheck()
+      Uncheck()
     }
     const config = {
       headers: { 'auth-token': token }
@@ -61,7 +82,6 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, unc
 
     axios.put(path, task, config)
       .then(response => {
-        console.log(response.data);
       })
       .catch(error => {
         console.error(error);
@@ -165,6 +185,17 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, unc
             <Form.Control type="time" defaultValue="00:00"/>
         </Form.Group>
         </FormRow>
+
+        <FormRow>
+          <Form.Label>Finished by:</Form.Label>
+        </FormRow>
+        <EmployeeBox>
+        {completedBy? (
+          <div>{completedBy.first_name} {completedBy.last_name}</div>
+            )
+          :
+          <div>No one yet...</div>}
+        </EmployeeBox>
     </Form>
   ) : (
     <p>Loading...</p>
