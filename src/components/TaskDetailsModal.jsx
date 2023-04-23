@@ -24,18 +24,18 @@ const EmployeeBox = styled.div`
   margin-bottom: 10px;
 `
 
-const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Uncheck}) => {
+const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Uncheck, showAssignTask, showSetPrevious, showAddAssistants}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   
   const token = useSelector((state) => state.user.jwt)
-  const user = useSelector((state) => state.user.currentUser);
   
   const [task, setTask] = useState(null)
   const [title, setTitle] = useState('');
   const [progress, setProgress] = useState('Not Started');
   const [isModified, setIsModified] = useState(false)
   const [completedBy, setCompletedBy] = useState(null)
+  const [isAssignedTo, setIsAssignedTo] = useState(null)
   
   useEffect(() => {
     const config = {
@@ -48,7 +48,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         setTask(response.data)
         setProgress(response.data[0].progress)
         const completedByUser = response.data[0].completed_by
-        const userDetailsPath = apiUrl + '/users/getDetails/' + completedByUser
+        let userDetailsPath = apiUrl + '/users/getDetails/' + completedByUser
         axios.get(userDetailsPath, config)
         .then(userResponse => {
           setCompletedBy(userResponse.data)
@@ -56,6 +56,14 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         .catch(userError => {
           console.error(userError);
         });
+        const assignedTo = response.data[0].assigned_to;
+        const assignedToPath = apiUrl + '/users/getDetails/' + assignedTo
+        axios.get(assignedToPath, config)
+        .then(userResponse =>{
+          setIsAssignedTo(userResponse.data)
+        }).catch(userError =>{
+          console.error(userError)
+        })
       })
       .catch(error => {
         console.error(error);
@@ -89,6 +97,8 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
   }
 
   return (
+    <>
+    
     <Modal show={show} onHide={()=>{
       handleSaveChanges()
       onHide()
@@ -126,7 +136,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
       </Form.Group>
 
       <FormRow style={{marginBottom:"30px"}}>
-        <Form.Group style={{ width: "48%" }}>
+        <Form.Group style={{ width: "31%" }}>
           <Form.Label>Priority:</Form.Label>
           <Form.Select aria-label="Priority" defaultValue={task[0].priority} onChange={(e) => {
             setTask({ ...task, priority: e.target.value })
@@ -137,7 +147,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
             <option value="Urgent">Urgent</option>
           </Form.Select>
         </Form.Group>
-        <Form.Group style={{ width: "48%" }}>
+        <Form.Group style={{ width: "31%" }}>
           <Form.Label>Progress:</Form.Label>
           <Form.Select aria-label="Progress" defaultValue={task[0].progress} onChange={(e) => {
             setTask({ ...task, progress: e.target.value })
@@ -148,6 +158,17 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
             <option value="In Progress">In Progress</option>
             <option value="Stuck">Stuck</option>
             <option value="Done">Done</option>
+          </Form.Select>
+        </Form.Group>
+        <Form.Group style={{ width: "31%" }}>
+          <Form.Label>Difficulty:</Form.Label>
+          <Form.Select aria-label="Difficulty" defaultValue={task[0].difficulty} onChange={(e) => {
+            setTask({ ...task, difficulty: e.target.value })
+          }}>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+            <option value="very hard">Very Hard</option>
           </Form.Select>
         </Form.Group>
       </FormRow>
@@ -185,6 +206,35 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
             <Form.Control type="time" defaultValue="00:00"/>
         </Form.Group>
         </FormRow>
+        
+        <FormRow>
+          <Button style={{
+            width:"31%",
+            marginTop:"20px"
+        }} onClick={() => {
+          showAssignTask()
+          handleSaveChanges()
+          onHide()
+        }}>Assign task...</Button>
+
+          <Button style={{
+            width:"31%",
+            marginTop:"20px"
+        }} onClick={() =>{
+          showSetPrevious()
+          handleSaveChanges()
+          onHide()
+        }}>Set previous...</Button>
+        <Button style={{
+            width:"31%",
+            marginTop:"20px"
+        }} onClick={() =>{
+          showAddAssistants()
+          handleSaveChanges()
+          onHide()
+        }}>Add assistants...</Button>
+        </FormRow>
+        
 
         <FormRow>
           <Form.Label>Finished by:</Form.Label>
@@ -192,6 +242,16 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         <EmployeeBox>
         {completedBy? (
           <div>{completedBy.first_name} {completedBy.last_name}</div>
+            )
+          :
+          <div>No one yet...</div>}
+        </EmployeeBox>
+        <FormRow>
+          <Form.Label>Assigned to:</Form.Label>
+        </FormRow>
+        <EmployeeBox>
+        {isAssignedTo? (
+          <div>{isAssignedTo.first_name} {isAssignedTo.last_name}</div>
             )
           :
           <div>No one yet...</div>}
@@ -209,6 +269,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         }}>Close</Button>
       </Modal.Footer>
     </Modal>
+    </>
   )
 }
 

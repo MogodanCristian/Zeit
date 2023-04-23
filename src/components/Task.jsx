@@ -8,6 +8,9 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TaskDetailsModal from './TaskDetailsModal';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import AssignTaskModal from './AssignTaskModal';
+import SetPreviousModal from './SetPreviousModal';
+import AddAssistatsModal from './AddAssistantsModal';
 
 const Container = styled.div`
   display: flex;
@@ -41,6 +44,10 @@ const Task = ({ title, _id, progress}) => {
   const [titleState, setTitleState] = useState(title)
   const [isChecked, setIsChecked] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+
+  const [showAssignTask, setShowAssignTask] = useState(false)
+  const [showSetPrevious, setShowSetPrevious] = useState(false)
+  const [showAddAssistants, setShowAddAssistants] = useState(false)
 
   useEffect(() => {
     if(progress === "Done"){
@@ -115,8 +122,35 @@ const Task = ({ title, _id, progress}) => {
       _id={_id} 
       handleTaskUpdate={handleTaskUpdate}
       handleCheck={setToChecked}
-      Uncheck={Uncheck}/>}
+      Uncheck={Uncheck}
+      showAssignTask={() =>{setShowAssignTask(true)}}
+      showSetPrevious={() =>{setShowSetPrevious(true)}}
+      showAddAssistants={() =>{setShowAddAssistants(true)}}/>}
+      {showAssignTask && <AssignTaskModal
+        show={showAssignTask}
+        onHide={() => {
+          setShowAssignTask(false)
+          showDetailsPage()
+        }}
+      />}
+      {showSetPrevious && <SetPreviousModal
+          show={showSetPrevious}
+          onHide={() =>{
+            setShowSetPrevious(false)
+            showDetailsPage();
+          }}
+          />
+      }
+      {showAddAssistants && <AddAssistatsModal
+          show={showAddAssistants}
+          onHide={() =>{
+            setShowAddAssistants(false)
+            showDetailsPage()
+          }}
+        />
+      }
     </>
+    
   );
 };
 
