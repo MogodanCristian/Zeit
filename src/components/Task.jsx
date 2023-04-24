@@ -132,6 +132,7 @@ const Task = ({ title, _id, progress}) => {
           setShowAssignTask(false)
           showDetailsPage()
         }}
+        _id={_id}
       />}
       {showSetPrevious && <SetPreviousModal
           show={showSetPrevious}
@@ -147,6 +148,7 @@ const Task = ({ title, _id, progress}) => {
             setShowAddAssistants(false)
             showDetailsPage()
           }}
+          
         />
       }
     </>
