@@ -30,7 +30,7 @@ const AssignTaskModal = ({ show, onHide, _id }) => {
     const config = {
       headers: { 'auth-token': token },
     };
-    const path = 'http://localhost:3000/api/tasks/getProject/' + _id;
+    const path = apiUrl+'/tasks/getProject/' + _id;
     axios
       .get(path, config)
       .then((response) => {
@@ -47,7 +47,7 @@ const AssignTaskModal = ({ show, onHide, _id }) => {
 
         axios
           .get(
-            'http://localhost:3000/api/projects/getAvailableEmployees/' +
+            apiUrl+'/projects/getAvailableEmployees/' +
               project._id
           )
           .then((availableRes) => {
@@ -74,8 +74,24 @@ const AssignTaskModal = ({ show, onHide, _id }) => {
     return employee === selectedEmployee;
   };
 
+  const handleSaveChanges = () =>{
+    const config = {
+      headers: { 'auth-token': token },
+    };
+    if(selectedEmployee)
+    {axios.put(apiUrl+'/tasks/' +_id, {
+      assigned_to: selectedEmployee._id
+    }, config)
+      .then(response => {
+      })
+      .catch(error => {
+        console.error(error);
+      });}
+      onHide()
+  }
+
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} onHide={handleSaveChanges}>
       <Modal.Header closeButton>
         <Modal.Title>Assign Task</Modal.Title>
       </Modal.Header>
@@ -96,11 +112,8 @@ const AssignTaskModal = ({ show, onHide, _id }) => {
         ))}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
+        <Button variant="secondary" onClick={handleSaveChanges}>
           Close
-        </Button>
-        <Button variant="primary" onClick={onHide}>
-          Save Changes
         </Button>
       </Modal.Footer>
     </Modal>

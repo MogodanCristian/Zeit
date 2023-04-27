@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dropdown } from 'react-bootstrap';
+import { Button, Dropdown, Modal } from 'react-bootstrap';
 import styled from 'styled-components';
 import ThreeDotsToggle from './ThreeDotsToggle';
 import MuiCheckbox from '@mui/material/Checkbox';
@@ -34,7 +34,7 @@ const Title = styled.span`
   max-width: calc(100% - 30px);
 `;
 
-const Task = ({ title, _id, progress}) => {
+const Task = ({ title, _id, progress, removeFromBucket}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   
@@ -48,6 +48,8 @@ const Task = ({ title, _id, progress}) => {
   const [showAssignTask, setShowAssignTask] = useState(false)
   const [showSetPrevious, setShowSetPrevious] = useState(false)
   const [showAddAssistants, setShowAddAssistants] = useState(false)
+
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false)
 
   useEffect(() => {
     if(progress === "Done"){
@@ -99,6 +101,20 @@ const Task = ({ title, _id, progress}) => {
         console.error(error);
       });
   }
+
+  const handleDelete = () =>{
+    const config = {
+      headers: { 'auth-token': token }
+    };
+    const path = apiUrl+'/tasks/' + _id;
+    axios.delete(path,config)
+    .then(response => {
+
+    }).catch(error => {
+        console.error(error);
+      });
+      removeFromBucket(_id)
+  } 
   return (
     <>
     <Container >
@@ -111,7 +127,7 @@ const Task = ({ title, _id, progress}) => {
       <Dropdown drop="left">
         <Dropdown.Toggle as={ThreeDotsToggle} />
         <Dropdown.Menu size="sm" title="" align="end">
-          <Dropdown.Item>Delete</Dropdown.Item>
+          <Dropdown.Item onClick={() => setShowConfirmDelete(true)}>Delete</Dropdown.Item>
           <Dropdown.Item>Move</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
@@ -151,6 +167,25 @@ const Task = ({ title, _id, progress}) => {
           
         />
       }
+
+        <Modal show={showConfirmDelete} onHide={() => setShowConfirmDelete(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Confirm Delete</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Are you sure you want to delete the task "{title}"?</Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowConfirmDelete(false)}>
+                Cancel
+              </Button>
+              <Button variant="danger" onClick={() =>{
+                handleDelete()
+                setShowConfirmDelete(false)
+              }}>
+                Delete
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
     </>
     
   );
