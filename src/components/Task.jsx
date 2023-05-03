@@ -75,7 +75,7 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
     const path = apiUrl+'/tasks/' + _id;
 
     axios.put(path,{
-      completed_by: user
+      completed_by: user,
     }, config)
       .then(response => {
         console.log(response.data);
@@ -83,6 +83,8 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
       .catch(error => {
         console.error(error);
       });
+    
+    
   }
   const Uncheck =() =>{
     setIsChecked(false)

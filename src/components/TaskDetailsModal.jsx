@@ -36,6 +36,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
   const [isModified, setIsModified] = useState(false)
   const [completedBy, setCompletedBy] = useState(null)
   const [isAssignedTo, setIsAssignedTo] = useState(null)
+  const [previous, setPrevious] = useState(null)
   
   useEffect(() => {
     const config = {
@@ -49,6 +50,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         setProgress(response.data[0].progress)
         const completedByUser = response.data[0].completed_by
         let userDetailsPath = apiUrl + '/users/getDetails/' + completedByUser
+
         axios.get(userDetailsPath, config)
         .then(userResponse => {
           setCompletedBy(userResponse.data)
@@ -58,12 +60,21 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         });
         const assignedTo = response.data[0].assigned_to;
         const assignedToPath = apiUrl + '/users/getDetails/' + assignedTo
+
         axios.get(assignedToPath, config)
         .then(userResponse =>{
           setIsAssignedTo(userResponse.data)
         }).catch(userError =>{
           console.error(userError)
         })
+
+        if(response.data[0].previous)
+        {
+          axios.get(apiUrl+'/tasks/'+response.data[0].previous, config)
+          .then(previousTaskRes =>{
+            setPrevious(previousTaskRes.data)
+          }) 
+        }
       })
       .catch(error => {
         console.error(error);
@@ -149,7 +160,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         </Form.Group>
         <Form.Group style={{ width: "31%" }}>
           <Form.Label>Progress:</Form.Label>
-          <Form.Select aria-label="Progress" defaultValue={task[0].progress} onChange={(e) => {
+          <Form.Select aria-label="Progress" defaultValue={task[0].progress} disabled={isAssignedTo === null ? true : false} onChange={(e) => {
             setTask({ ...task, progress: e.target.value })
             setProgress(e.target.value)
           }
@@ -235,6 +246,17 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         }}>Add assistants...</Button>
         </FormRow>
         
+        <FormRow>
+          <Form.Label>Previous task that must be completed:</Form.Label> 
+        </FormRow>
+        <EmployeeBox>
+          {
+            previous? (
+              <div>{previous.title}</div>
+            ) :
+            <div>No task set as previous.</div>
+          }
+        </EmployeeBox>
 
         <FormRow>
           <Form.Label>Finished by:</Form.Label>
