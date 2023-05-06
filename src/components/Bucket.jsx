@@ -180,6 +180,10 @@ const Bucket = ({ title, _id, onDelete}) => {
     setNewTitle(e.target.value);
   };
 
+  const removeFromBucket = (taskID) =>{
+    setTasks(tasks.filter(task => task._id !== taskID))
+  }
+
   return (
     <>
     <Container>
@@ -205,6 +209,8 @@ const Bucket = ({ title, _id, onDelete}) => {
             title={item.title}
             key={index}
             _id={item._id}
+            progress={item.progress}
+            removeFromBucket={removeFromBucket}
             />
           ))
         }
