@@ -158,6 +158,7 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
             setShowSetPrevious(false)
             showDetailsPage();
           }}
+          _id={_id}
           />
       }
       {showAddAssistants && <AddAssistatsModal

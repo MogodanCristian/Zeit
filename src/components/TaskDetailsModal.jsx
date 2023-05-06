@@ -252,7 +252,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         <EmployeeBox>
           {
             previous? (
-              <div>{previous.title}</div>
+              <div>{previous[0].title}</div>
             ) :
             <div>No task set as previous.</div>
           }
