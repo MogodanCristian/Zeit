@@ -99,7 +99,7 @@ const Buckets = () => {
   return (
     <>
     <PageContainer>
-      <BucketNavbar title={projectTitle}/>
+      <BucketNavbar title={projectTitle} _id={projectID}/>
       {user.role === 'manager' && <ButtonContainer>
         <StyledButton onClick={handleShowCreateBucket}>Create Bucket</StyledButton>
       </ButtonContainer>}

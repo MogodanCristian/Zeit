@@ -48,25 +48,21 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
       .then(response => {
         setTask(response.data)
         setProgress(response.data[0].progress)
-        const completedByUser = response.data[0].completed_by
-        let userDetailsPath = apiUrl + '/users/getDetails/' + completedByUser
-
-        axios.get(userDetailsPath, config)
+        if(response.data[0].completed_by){
+        axios.get(apiUrl + '/users/getDetails/' + response.data[0].completed_by, config)
         .then(userResponse => {
           setCompletedBy(userResponse.data)
         })
         .catch(userError => {
           console.error(userError);
-        });
-        const assignedTo = response.data[0].assigned_to;
-        const assignedToPath = apiUrl + '/users/getDetails/' + assignedTo
-
-        axios.get(assignedToPath, config)
+        });}
+        if(response.data[0].assigned_to){ 
+        axios.get(apiUrl + '/users/getDetails/' + response.data[0].assigned_to, config)
         .then(userResponse =>{
           setIsAssignedTo(userResponse.data)
         }).catch(userError =>{
           console.error(userError)
-        })
+        })}
 
         if(response.data[0].previous)
         {
