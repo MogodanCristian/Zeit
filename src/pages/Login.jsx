@@ -145,7 +145,7 @@ const Login = () => {
               <Checkbox onChange={handlePersistance} checked={keepLoggedToggle}/>
               <span>Keep me logged in</span>
             </CheckboxContainer>
-            <ForgotPassword>Forgot password? Click <Link to={'/forgot_password'}>here</Link>!
+            <ForgotPassword>Forgot password? Click <Link to={'/forgotPassword'}>here</Link>!
             </ForgotPassword>
             {isFetching && <Spinner/>}
             {loginFail && <Error>Email or password are incorrect.Try again.</Error>}

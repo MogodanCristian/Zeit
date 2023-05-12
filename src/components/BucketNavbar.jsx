@@ -25,7 +25,6 @@ const BucketNavbar = ({title, _id}) => {
           <Navbar.Brand style={{fontSize:"25px"}}>{title}</Navbar.Brand>
           <Nav className="me-auto">
             <Nav.Link onClick={() =>{navigate('/projects/'+_id + '/'+title + '/buckets')}}>Board</Nav.Link>
-            <Nav.Link>Grid</Nav.Link>
             <Nav.Link onClick={() =>{navigate('/projects/'+_id + '/'+title + '/charts')}}>Charts</Nav.Link>
             {user.role === 'manager' && <Nav.Link onClick={handleShowAddEmployee}>Add Employees</Nav.Link>}
            <Nav.Link onClick={handleShowEmployeesModal}>List Employees</Nav.Link>
