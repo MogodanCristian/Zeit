@@ -74,6 +74,39 @@ function getUserIdFromUrl(url) {
   return pathSegments[pathSegments.length - 1];
 }
 
+const passwordValidation = (password) => {
+  let error=""
+
+  if (!password) {
+    error = "Password is required.";
+  }
+
+  if (password.length < 8) {
+    error = "Password must be at least 8 characters long.";
+  }
+
+  if (!password.match(/.*\d.*/)) {
+    error = "Password must contain at least one digit.";
+  }
+
+  if (!password.match(/.*[a-z].*/)) {
+    error = "Password must contain at least one lowercase letter.";
+  }
+
+  if (!password.match(/.*[A-Z].*/)) {
+    error = "Password must contain at least one uppercase letter.";
+  }
+
+  if (!password.match(/.*\W.*/)) {
+    error = "Password must contain at least one special character.";
+  }
+
+  if (/\s/.test(password)) {
+    error = "Password must not contain whitespace.";
+  }
+  return error
+};
+
 const ChangePassword = () => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
@@ -82,8 +115,9 @@ const ChangePassword = () => {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword]=useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [passwordMessage, setPasswordMessage] = useState('')
+  const [confirmPasswordMessage, setConfirmPasswordMessage] = useState('')
   const [allDone,setAllDone] = useState(false)
-
   useEffect(() => {
     const _id=getUserIdFromUrl(window.location.href);
     axios.get('http://localhost:3000/api/users/getDetails/'+_id)
@@ -101,13 +135,21 @@ const ChangePassword = () => {
           <Input
             placeholder="Password"
             type="password"
-            onChange={(e) =>{setPassword(e.target.value)}}
+            onChange={(e) =>{
+              setPassword(e.target.value)
+              setPasswordMessage(passwordValidation(e.target.value))
+            }}
             />
+            {passwordMessage && <Error>{passwordMessage}</Error>}
           <Input
             placeholder="Confirm password"
             type="password"
-            onChange={(e) =>{setConfirmPassword(e.target.value)}}
+            onChange={(e) =>{
+              setConfirmPassword(e.target.value)
+              setConfirmPasswordMessage(passwordValidation(e.target.value))
+            }}
             />
+            {confirmPasswordMessage && <Error>{confirmPasswordMessage}</Error>}
           <Button onClick={(e)=>{
             e.preventDefault( )
             if(password && confirmPassword)
