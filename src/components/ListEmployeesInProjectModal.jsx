@@ -80,20 +80,24 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
         <Modal.Title>List of Employees</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {employees.map((employee, index) => (
-          <EmployeeBox key={index}>
-            <div>{employee.first_name} {employee.last_name}</div>
-            {clickedIndexes.includes(index) ? (
-              <span style={{color:'red'}}>Removed</span>
-            ) : (
-              employee._id === project.manager_id ? <span>Manager</span> :
-              (user.role === 'manager' && (
-                <Button variant="primary" size="sm" onClick={() => handleRemoveClick(index, employee._id)}>Remove</Button>
-              ))
-            )}
-          </EmployeeBox>
-        ))}
-      </Modal.Body>
+  {employees ? (
+    employees.map((employee, index) => (
+      <EmployeeBox key={index}>
+        <div>{employee.first_name} {employee.last_name}</div>
+        {clickedIndexes.includes(index) ? (
+          <span style={{color:'red'}}>Removed</span>
+        ) : (
+          employee._id === project.manager_id ? <span>Manager</span> :
+          (user.role === 'manager' && (
+            <Button variant="primary" size="sm" onClick={() => handleRemoveClick(index, employee._id)}>Remove</Button>
+          ))
+        )}
+      </EmployeeBox>
+    ))
+  ) : (
+    <div>No employees found.</div>
+  )}
+</Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() =>{
         if(clickedIndexes.length !== 0)

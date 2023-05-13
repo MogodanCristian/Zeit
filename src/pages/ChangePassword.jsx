@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -78,11 +78,20 @@ const ChangePassword = () => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const navigate = useNavigate()
-
+  const [user,setUser] = useState(null)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword]=useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [allDone,setAllDone] = useState(false)
+
+  useEffect(() => {
+    const _id=getUserIdFromUrl(window.location.href);
+    axios.get('http://localhost:3000/api/users/getDetails/'+_id)
+    .then(response =>{
+      setUser(response.data)
+    })
+  }, [])
+  
   return (
     <OuterContainer>
     <InnerContainer>
@@ -113,6 +122,9 @@ const ChangePassword = () => {
                   setAllDone(true)
                   setErrorMessage('')
                  }
+                 axios.put('http://localhost:3000/api/users/' +_id,{
+                  first_login:false
+                 })
                 })
               }
               else{

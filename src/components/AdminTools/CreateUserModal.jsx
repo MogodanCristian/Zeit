@@ -20,7 +20,7 @@ const CreateUserModal = ({ show, onHide }) => {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('employee');
   const [password, setPassword] = useState('');
-
+  const [allGood, setAllGood] = useState(false)
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -69,7 +69,7 @@ const CreateUserModal = ({ show, onHide }) => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = apiUrl+'/users/register'
+    const path = 'http://localhost:3000/api/users/register'
     axios.post(path, {
       first_name: firstName,
       last_name: lastName,
@@ -78,7 +78,10 @@ const CreateUserModal = ({ show, onHide }) => {
       role: role
       }, config)
     .then(response => {
-      onHide()
+      if(response.status  === 200)
+      {
+        setAllGood(true)
+      }
     })
     .catch(error => {
       console.error('Error creating task', error);
@@ -121,6 +124,7 @@ const CreateUserModal = ({ show, onHide }) => {
           </Form.Group>
         </Form>
         {error && <Error>{errorMessage}</Error>}
+        {allGood && <span>User creat cu succes!</span>}
       </Modal.Body>
       <Modal.Footer>
           <Button variant="secondary" onClick={onHide}>

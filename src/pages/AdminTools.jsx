@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { Button } from 'react-bootstrap'
-import CreateUserModal from '../components/CreateUserModal'
-import ShowAllUsersModal from '../components/ShowAllUsersModal'
+import CreateUserModal from '../components/AdminTools/CreateUserModal'
+import ShowAllUsersModal from '../components/AdminTools/ShowAllUsersModal'
 
 const StyledButtonContainer = styled.div`
   display: flex;
@@ -31,11 +31,6 @@ const AdminTools = () => {
     console.log('Edit User button clicked')
   }
 
-  const handleSendEmail = () => {
-    // code to send email for password change goes here
-    console.log('Send Email button clicked')
-  }
-
   const handleDeleteUser = () => {
     // code to delete a user goes here
     console.log('Delete User button clicked')
@@ -53,7 +48,6 @@ const AdminTools = () => {
         <StyledButton variant="secondary" onClick={handleShowForm}>Create New User</StyledButton>
         <StyledButton variant="secondary" onClick={handleShowUsersModal}>Show All Users</StyledButton>
         <StyledButton variant="secondary" onClick={handleEditUser}>Edit User Details</StyledButton>
-        <StyledButton variant="secondary" onClick={handleSendEmail}>Send Email for Password Change</StyledButton>
         <StyledButton variant="danger" onClick={handleDeleteUser}>Delete User</StyledButton>
       </StyledButtonContainer>
       <CreateUserModal show={showCreateUser} onHide={handleCloseForm}/>
