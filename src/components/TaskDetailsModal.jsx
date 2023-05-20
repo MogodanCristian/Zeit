@@ -24,7 +24,7 @@ const EmployeeBox = styled.div`
   margin-bottom: 10px;
 `
 
-const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Uncheck, showAssignTask, showSetPrevious, showAddAssistants}) => {
+const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Uncheck, showAssignTask, showSetPrevious, showAddAssistants, handleStuck, Unstuck}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   
@@ -78,7 +78,6 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
   }, []);
 
   const handleSaveChanges = () => {
-    console.log(completedBy)
     if(isModified)
       {
         handleTaskUpdate(title);
@@ -86,9 +85,15 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
     if(progress === "Done")
     {
       handleCheck()
+      Unstuck()
+    }
+    else if(progress === "Stuck"){
+      handleStuck()
+      Uncheck()
     }
     else{
       Uncheck()
+      Unstuck()
     }
     const config = {
       headers: { 'auth-token': token }

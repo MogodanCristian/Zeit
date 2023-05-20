@@ -39,15 +39,15 @@ const ProgressPieChart = ({progressCounts}) => {
         backgroundColor: [
             'rgba(255, 99, 132, 1)',
             'rgba(54, 162, 235, 1)',
-            '#39e239',
-            'rgba(255, 255, 0, 1)'
+            'rgb(255, 205, 86)',
+            'rgb(75, 192, 192)',
 
         ],
         borderColor: [
             'rgba(255, 99, 132, 1)',
             'rgba(54, 162, 235, 1)',
-            '#39e239',
-            'rgba(255, 255, 0, 1)'
+            'rgb(255, 205, 86)',
+            'rgb(75, 192, 192)',
         ],
         borderWidth: 1,
         },

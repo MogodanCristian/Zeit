@@ -34,6 +34,12 @@ const Title = styled.span`
   max-width: calc(100% - 30px);
 `;
 
+const Exclamation = styled.span`
+  color: red;
+  font-size: 25px;
+  font-family: "Pacifico";
+`;
+
 const Task = ({ title, _id, progress, removeFromBucket}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
@@ -44,6 +50,7 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
   const [titleState, setTitleState] = useState(title)
   const [isChecked, setIsChecked] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [isStuck, setIsStuck] = useState(false)
 
   const [showAssignTask, setShowAssignTask] = useState(false)
   const [showSetPrevious, setShowSetPrevious] = useState(false)
@@ -54,6 +61,13 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
   useEffect(() => {
     if(progress === "Done"){
       setIsChecked(true)
+      setIsStuck(false)
+    }
+    if(progress === "Stuck"){
+      setIsStuck(true)
+    }
+    else{
+      setIsStuck(false)
     }
   }, [])
   
@@ -83,9 +97,8 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
       .catch(error => {
         console.error(error);
       });
-    
-    
   }
+
   const Uncheck =() =>{
     setIsChecked(false)
     const config = {
@@ -102,6 +115,14 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
       .catch(error => {
         console.error(error);
       });
+  }
+
+  const handleStuck = () =>{
+    setIsStuck(true)
+  }
+
+  const handleUnstuck = () =>{
+    setIsStuck(false)
   }
 
   const handleDelete = () =>{
@@ -125,7 +146,13 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
         checkedIcon={<CheckCircleIcon />}
         checked={isChecked}
       />
-      <Title style={{textDecoration: isChecked? 'line-through' : 'none'}} onClick={showDetailsPage}>{titleState}</Title>
+      <div>
+        <Title style={{textDecoration: isChecked? 'line-through' : 'none'}} onClick={showDetailsPage}>
+          {titleState}
+        </Title>
+        {isStuck &&<Exclamation>!</Exclamation>}
+      </div>
+      
       <Dropdown drop="left">
         <Dropdown.Toggle as={ThreeDotsToggle} />
         <Dropdown.Menu size="sm" title="" align="end">
@@ -143,7 +170,9 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
       Uncheck={Uncheck}
       showAssignTask={() =>{setShowAssignTask(true)}}
       showSetPrevious={() =>{setShowSetPrevious(true)}}
-      showAddAssistants={() =>{setShowAddAssistants(true)}}/>}
+      showAddAssistants={() =>{setShowAddAssistants(true)}}
+      handleStuck={handleStuck}
+      Unstuck={handleUnstuck}/>}
       {showAssignTask && <AssignTaskModal
         show={showAssignTask}
         onHide={() => {
