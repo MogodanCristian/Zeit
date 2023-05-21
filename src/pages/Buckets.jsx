@@ -15,7 +15,7 @@ const PageContainer = styled.div`
 `
 
 const BucketContainer = styled.div`
-  margin-top: 30px;
+  margin-top: ${props => props.role === 'employee' ? '70px' : '30px'};
   display: block;
   height: 69vh;
   white-space: nowrap;
@@ -103,13 +103,14 @@ const Buckets = () => {
       {user.role === 'manager' && <ButtonContainer>
         <StyledButton onClick={handleShowCreateBucket}>Create Bucket</StyledButton>
       </ButtonContainer>}
-      <BucketContainer>
+      <BucketContainer role={user.role}>
         {buckets.map((item,index) =>(
           <Bucket
           title={item.title}
           _id={item._id}
           key={index}
           onDelete = {handleBucketDeletion}
+          projectTitle={projectTitle}
           />
         ))}
       </BucketContainer>

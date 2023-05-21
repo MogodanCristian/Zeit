@@ -40,7 +40,7 @@ const Exclamation = styled.span`
   font-family: "Pacifico";
 `;
 
-const Task = ({ title, _id, progress, removeFromBucket}) => {
+const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitle}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   
@@ -119,6 +119,27 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
 
   const handleStuck = () =>{
     setIsStuck(true)
+    const config = {
+      headers: { 'auth-token': token }
+    };
+    const path = apiUrl+'/tasks/' + _id;
+    const subject = "Help needed!"
+    const body = "The employee "+ user.first_name + " " + user.last_name + " is currently having problems with the task "+ title+" ,from the bucket of tasks called " + bucketTitle+" and the project "+ projectTitle+".Go investigate and take some measures regarding the issue."
+    axios.get('http://localhost:3000/api/projects/'+projectTitle+'/getManager',config)
+    .then(response =>{
+      if(user._id !== response.data.manager_id){
+        axios.post('http://localhost:3000/api/messages',{
+          subject:subject,
+          body:body,
+          user: response.data.manager_id
+        }, config)
+          .then(response => {
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.error(error);
+          });}
+    })
   }
 
   const handleUnstuck = () =>{

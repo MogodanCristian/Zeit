@@ -86,7 +86,7 @@ const AddTask = styled.button`
 
 const TaskContainer = styled.div`
 `
-const Bucket = ({ title, _id, onDelete}) => {
+const Bucket = ({ title, _id, onDelete, projectTitle}) => {
   const inputRef = useRef(null);
 
   const env = JSON.parse(JSON.stringify(import.meta.env));
@@ -211,6 +211,8 @@ const Bucket = ({ title, _id, onDelete}) => {
             _id={item._id}
             progress={item.progress}
             removeFromBucket={removeFromBucket}
+            bucketTitle={title}
+            projectTitle={projectTitle}
             />
           ))
         }

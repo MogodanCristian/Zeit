@@ -6,6 +6,22 @@ import { useSelector } from 'react-redux';
 import AddEmployeeModal from '../components/AddEmployeeModal';
 import ListEmployeesInProjectModal from './ListEmployeesInProjectModal';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import styled from 'styled-components';
+
+const SmallRoundButton = styled.button`
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  border: none;
+  color: #000000;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 20px;
+`;
 
 const BucketNavbar = ({title, _id}) => {
   const user = useSelector((state)=> state.user.currentUser)
@@ -18,9 +34,17 @@ const BucketNavbar = ({title, _id}) => {
 
   const handleCloseShowEmployees = () =>setShowEmployeesModal(false);
   const handleShowEmployeesModal = () => setShowEmployeesModal(true);
+
+  const handleGoBack = () => {
+    navigate(-1); 
+  };
+
   return (
     <>
     <Navbar bg="light" variant="light">
+        <SmallRoundButton onClick={handleGoBack}>
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </SmallRoundButton>
         <Container>
           <Navbar.Brand style={{fontSize:"25px"}}>{title}</Navbar.Brand>
           <Nav className="me-auto">
