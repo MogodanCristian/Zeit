@@ -51,6 +51,8 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
   const [isChecked, setIsChecked] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [isStuck, setIsStuck] = useState(false)
+  const [priority, setPriority] = useState(null)
+  const [difficulty, setDifficulty] = useState(null)
 
   const [showAssignTask, setShowAssignTask] = useState(false)
   const [showSetPrevious, setShowSetPrevious] = useState(false)
@@ -189,7 +191,11 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
       handleTaskUpdate={handleTaskUpdate}
       handleCheck={setToChecked}
       Uncheck={Uncheck}
-      showAssignTask={() =>{setShowAssignTask(true)}}
+      showAssignTask={(priority, difficulty) =>{
+        setPriority(priority)
+        setDifficulty(difficulty)
+        setShowAssignTask(true)
+      }}
       showSetPrevious={() =>{setShowSetPrevious(true)}}
       showAddAssistants={() =>{setShowAddAssistants(true)}}
       handleStuck={handleStuck}
@@ -201,6 +207,8 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
           showDetailsPage()
         }}
         _id={_id}
+        priority={priority}
+        difficulty={difficulty}
       />}
       {showSetPrevious && <SetPreviousModal
           show={showSetPrevious}

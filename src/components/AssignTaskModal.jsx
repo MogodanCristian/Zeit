@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Modal, Button, Form } from 'react-bootstrap'
+import { Modal, Button, Form, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import axios from 'axios'
 
 const EmployeeBox = styled.div`
@@ -22,9 +21,10 @@ const FormRow = styled.div`
   justify-content: space-between;
   width: 100%;
   margin-top: 10px;
-`;
+  margin-bottom: 10px;
+`
 
-const AssignTaskModal = ({ show, onHide, _id }) => {
+const AssignTaskModal = ({ show, onHide, _id ,priority, difficulty}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
 
@@ -34,12 +34,32 @@ const AssignTaskModal = ({ show, onHide, _id }) => {
   const [assignedEmployeeId, setAssignedEmployeeId] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [task, setTask] = useState(null);
-  const [recommendedEmployee,setRecommendedEmployee] = useState(null)
+  const [recommendedEmployee, setRecommendedEmployee] = useState(null)
 
+  const priorityEnum = ["Low", "Medium", "High", "Urgent"];
+  const difficultyEnum = ["easy", "medium", "hard", "very hard"];
+
+  function calculateScore(priority, difficulty) {
+    const priorityValue = priorityEnum.indexOf(priority) + 1;
+    const difficultyValue = difficultyEnum.indexOf(difficulty) + 1;
+    return priorityValue * difficultyValue;
+    }
+
+    function calculatePerformanceLevel(score) {
+      if (score >= 1 && score < 4) {
+        return "Low Performance"
+      } else if (score >= 4 && score < 9) {
+        return "Medium Performance"
+      } else if (score >= 9 && score <= 16) {
+        return "High Performance"
+      }
+    }
   useEffect(() => {
     const config = {
       headers: { 'auth-token': token },
     };
+    console.log(priority)
+    console.log(difficulty)
     const path = apiUrl+'/tasks/getProject/' + _id;
     axios
       .get(path, config)
@@ -52,12 +72,12 @@ const AssignTaskModal = ({ show, onHide, _id }) => {
             setAssignedEmployeeId(detailsRes.data[0]?.assigned_to);
 
             axios.post('http://localhost:3000/api/tasks/getRecommendedEmployee/' +_id, {
-                priority: detailsRes.data[0].priority,
-                difficulty: detailsRes.data[0].difficulty
-              }).then((recommendedRes) => {
-                console.log(recommendedRes.data)
-                setRecommendedEmployee(recommendedRes.data)
-              })
+              priority: detailsRes.data[0].priority,
+              difficulty: detailsRes.data[0].difficulty
+            }).then((recommendedRes) => {
+              console.log(recommendedRes.data)
+              setRecommendedEmployee(recommendedRes.data)
+            })
 
           })
           .catch((error) => {
@@ -71,6 +91,7 @@ const AssignTaskModal = ({ show, onHide, _id }) => {
           )
           .then((availableRes) => {
             setEmployees(availableRes.data);
+
           })
           .catch((error) => {
             console.log(error);
@@ -93,20 +114,19 @@ const AssignTaskModal = ({ show, onHide, _id }) => {
     return employee === selectedEmployee;
   };
 
-  const handleSaveChanges = () =>{
+  const handleSaveChanges = () => {
     const config = {
       headers: { 'auth-token': token },
     };
-    if(selectedEmployee)
-    {
+    if (selectedEmployee) {
       axios.put(apiUrl+'/tasks/' +_id, {
-      assigned_to: selectedEmployee._id
-    }, config)
-      .then(response => {
-      })
-      .catch(error => {
-        console.error(error);
-      });
+        assigned_to: selectedEmployee._id
+      }, config)
+        .then(response => {
+        })
+        .catch(error => {
+          console.error(error);
+        });
       axios.put(apiUrl+'/users/' + selectedEmployee._id, {
         is_workin: true
       }, config)
@@ -116,41 +136,71 @@ const AssignTaskModal = ({ show, onHide, _id }) => {
           console.error(error);
         });
     }
-      onHide()
+    onHide()
   }
 
+  const renderTooltip = (employee) => (
+    <Tooltip id={`tooltip-${employee.id}`}>
+      {employee.first_name} {employee.last_name}
+    </Tooltip>
+  );
+
+  const performanceLevel = calculatePerformanceLevel(calculateScore(priority, difficulty));
+  let spanStyle = { fontWeight: 'bold' };
+
+  if (performanceLevel === 'Low Performance') {
+    spanStyle.color = '#79C999'; // Green
+  } else if (performanceLevel === 'Medium Performance') {
+    spanStyle.color = 'yellow';
+  } else if (performanceLevel === 'High Performance') {
+    spanStyle.color = 'red';
+  }
   return (
     <Modal show={show} onHide={handleSaveChanges}>
       <Modal.Header closeButton>
         <Modal.Title>Assign Task</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+      <FormRow>
+        <Form.Label>
+          Performance requirements suggestion:{' '}
+          <span style={spanStyle}>
+            {performanceLevel}
+          </span>
+        </Form.Label>
+      </FormRow>
         {employees.map((employee) => (
-          <EmployeeBox key={employee.id}>
-            <div>
-              {employee.first_name} {employee.last_name}
-            </div>
-            {isEmployeeSelected(employee) ? (
-              <span style={{ color: 'green'}}>✓ Assigned!</span>
-            ) : (
-              <Button variant="primary" onClick={() => handleAssignClick(employee)}>
-                Assign
-              </Button>
-            )}
-          </EmployeeBox>
+          <OverlayTrigger
+            key={employee.id}
+            placement="top"
+            overlay={renderTooltip(employee)}
+          >
+            <EmployeeBox>
+              <div>
+                {employee.first_name} {employee.last_name}
+              </div>
+              {isEmployeeSelected(employee) ? (
+                <span style={{ color: 'green'}}>✓ Assigned!</span>
+              ) : (
+                <Button variant="primary" onClick={() => handleAssignClick(employee)}>
+                  Assign
+                </Button>
+              )}
+            </EmployeeBox>
+          </OverlayTrigger>
         ))}
 
         <FormRow>
-          <Form.Label>Suggested employee:</Form.Label> 
+          <Form.Label>Suggested employee:</Form.Label>
         </FormRow>
         <EmployeeBox>
-          {recommendedEmployee? (
+          {recommendedEmployee ? (
             <div>
-            {recommendedEmployee.first_name} {recommendedEmployee.last_name}
-          </div>
-          ):
-          <div>No employee to recommend...</div>
-          }
+              {recommendedEmployee.first_name} {recommendedEmployee.last_name}
+            </div>
+          ) : (
+            <div>No employee to recommend...</div>
+          )}
         </EmployeeBox>
       </Modal.Body>
       <Modal.Footer>
@@ -163,4 +213,3 @@ const AssignTaskModal = ({ show, onHide, _id }) => {
 };
 
 export default AssignTaskModal;
-

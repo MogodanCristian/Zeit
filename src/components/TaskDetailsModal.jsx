@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
@@ -37,16 +37,20 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
   const [completedBy, setCompletedBy] = useState(null)
   const [isAssignedTo, setIsAssignedTo] = useState(null)
   const [previous, setPrevious] = useState(null)
-  
+
+  const [priority, setPriority] = useState(null)
+  const [difficulty, setDifficulty] = useState(null)
+
   useEffect(() => {
     const config = {
       headers: { 'auth-token': token }
     };
     const path = apiUrl+'/tasks/' + _id
-    console.log(_id)
     axios.get(path, config)
       .then(response => {
         setTask(response.data)
+        setPriority(response.data[0].priority)
+        setDifficulty(response.data[0].difficulty)
         setProgress(response.data[0].progress)
         if(response.data[0].completed_by){
         axios.get(apiUrl + '/users/getDetails/' + response.data[0].completed_by, config)
@@ -101,13 +105,19 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
     const path = apiUrl+'/tasks/' + _id;
 
     axios.put(path, task, config)
-      .then(response => {
-      })
       .catch(error => {
         console.error(error);
       });
   }
 
+  const handleAssignTask = () => {
+
+    handleSaveChanges();
+    showAssignTask(priority, difficulty);
+    onHide();
+  };
+
+  
   return (
     <>
     
@@ -152,6 +162,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           <Form.Label>Priority:</Form.Label>
           <Form.Select aria-label="Priority" defaultValue={task[0].priority} onChange={(e) => {
             setTask({ ...task, priority: e.target.value })
+            setPriority(e.target.value)
           }}>
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
@@ -163,7 +174,6 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           <Form.Label>Progress:</Form.Label>
           <Form.Select aria-label="Progress" defaultValue={task[0].progress} disabled={isAssignedTo === null ? true : false} onChange={(e) => {
             setTask({ ...task, progress: e.target.value })
-            setProgress(e.target.value)
           }
         }>
             <option value="Not Started">Not Started</option>
@@ -176,6 +186,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           <Form.Label>Difficulty:</Form.Label>
           <Form.Select aria-label="Difficulty" defaultValue={task[0].difficulty} onChange={(e) => {
             setTask({ ...task, difficulty: e.target.value })
+            setDifficulty(e.target.value)
           }}>
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
@@ -223,11 +234,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           <Button style={{
             width:"31%",
             marginTop:"20px"
-        }} onClick={() => {
-          showAssignTask()
-          handleSaveChanges()
-          onHide()
-        }}>Assign task...</Button>
+        }}  onClick={handleAssignTask}>Assign task...</Button>
 
           <Button style={{
             width:"31%",
