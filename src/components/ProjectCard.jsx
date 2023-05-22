@@ -161,6 +161,7 @@ const ProjectCard = ({project,index, onDelete}) => {
           </Button>
         </Modal.Footer>
       </Modal>
+      
       <EditProjectModal 
         show={showEditModal} 
         onHide={handleCloseEdit} 

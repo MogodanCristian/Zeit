@@ -19,17 +19,39 @@ const user = useSelector((state) => state.user.currentUser);
 
 const [messages, setMessages] = useState(null)
 
-  useEffect(() => {
-    const config = {
-        headers: { 'auth-token': token }
-      };
-      axios.get('http://localhost:3000/api/messages/' +user._id,config).then(response => {
-        setMessages(response.data)
-        console.log(response.data)
-      }).catch(error => {
-        console.log(error);
+const handleDelete = (messageID) =>{
+  const updatedMessages = [...messages];
+  const messageIndex = updatedMessages.findIndex(message => message._id === messageID);
+
+  if (messageIndex !== -1) {
+    updatedMessages.splice(messageIndex, 1);
+    setMessages(updatedMessages);
+  }
+
+}
+useEffect(() => {
+  const config = {
+    headers: { 'auth-token': token },
+  };
+
+  axios
+    .get('http://localhost:3000/api/messages/' + user._id, config)
+    .then((response) => {
+      setMessages(response.data);
+      response.data.forEach((message) => {
+        axios.put(`http://localhost:3000/api/messages/${message._id}`, {
+          is_read:true
+        }, config)
+          .catch((error) => {
+            console.log(error);
+          });
       });
-  }, [])
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}, []);
+
   return (
     <MessagesContainer>
     {messages && messages.length > 0 ? (
@@ -39,6 +61,8 @@ const [messages, setMessages] = useState(null)
           subject={message.subject}
           body={message.body}
           timestamp={message.timestamp}
+          handleDelete={handleDelete}
+          _id={message._id}
         />
       ))
     ) : (
