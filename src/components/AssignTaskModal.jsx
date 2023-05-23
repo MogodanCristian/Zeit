@@ -35,6 +35,9 @@ const AssignTaskModal = ({ show, onHide, _id ,priority, difficulty}) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [task, setTask] = useState(null);
   const [recommendedEmployee, setRecommendedEmployee] = useState(null)
+  const [employeePerformance, setEmployeePerformance] = useState(null)
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+
 
   const priorityEnum = ["Low", "Medium", "High", "Urgent"];
   const difficultyEnum = ["easy", "medium", "hard", "very hard"];
@@ -92,6 +95,24 @@ const AssignTaskModal = ({ show, onHide, _id ,priority, difficulty}) => {
           .then((availableRes) => {
             setEmployees(availableRes.data);
 
+            const promises = availableRes.data.map(async (employee) => {
+              const response = await axios.get(
+                'http://localhost:3000/api/users/performance/' + employee._id
+              );
+              return {
+                _id: employee._id,
+                performance: response.data,
+              };
+            });
+    
+            Promise.all(promises)
+              .then((data) => {
+                setEmployeePerformance(data);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+
           })
           .catch((error) => {
             console.log(error);
@@ -139,17 +160,39 @@ const AssignTaskModal = ({ show, onHide, _id ,priority, difficulty}) => {
     onHide()
   }
 
-  const renderTooltip = (employee) => (
-    <Tooltip id={`tooltip-${employee.id}`}>
-      {employee.first_name} {employee.last_name}
-    </Tooltip>
-  );
+  const renderTooltip = (employee) => {
+    if(!employeePerformance){
+      return null
+    }
+      const selectedEmployeePerformance = employeePerformance.find((data) => data._id === employee._id);
+      const performance = selectedEmployeePerformance ? selectedEmployeePerformance.performance : 'N/A';
+      let performanceLevel = '';
+  
+      if (performance === 1) {
+        performanceLevel = 'Low Performance';
+      } else if (performance === 2) {
+        performanceLevel = 'Medium Performance';
+      } else if (performance === 3) {
+        performanceLevel = 'High Performance';
+      }
+  
+      return (
+        <Tooltip id={`tooltip-${employee._id}`} 
+            show={tooltipVisible} 
+            onMouseEnter={() => setTooltipVisible(true)} 
+            onMouseLeave={() => setTooltipVisible(false)}
+            style={{position:"fixed"}}>
+              
+          {performanceLevel}
+        </Tooltip>
+      );
+  };
 
   const performanceLevel = calculatePerformanceLevel(calculateScore(priority, difficulty));
   let spanStyle = { fontWeight: 'bold' };
 
   if (performanceLevel === 'Low Performance') {
-    spanStyle.color = '#79C999'; // Green
+    spanStyle.color = '#79C999'; 
   } else if (performanceLevel === 'Medium Performance') {
     spanStyle.color = 'yellow';
   } else if (performanceLevel === 'High Performance') {
@@ -170,24 +213,30 @@ const AssignTaskModal = ({ show, onHide, _id ,priority, difficulty}) => {
         </Form.Label>
       </FormRow>
         {employees.map((employee) => (
-          <OverlayTrigger
-            key={employee.id}
-            placement="top"
-            overlay={renderTooltip(employee)}
-          >
-            <EmployeeBox>
-              <div>
-                {employee.first_name} {employee.last_name}
-              </div>
-              {isEmployeeSelected(employee) ? (
-                <span style={{ color: 'green'}}>✓ Assigned!</span>
-              ) : (
-                <Button variant="primary" onClick={() => handleAssignClick(employee)}>
-                  Assign
-                </Button>
-              )}
-            </EmployeeBox>
-          </OverlayTrigger>
+           <div style={{ position: 'relative' }} key={employee._id}>
+            <OverlayTrigger
+              key={employee.id}
+              trigger={['hover', 'focus']}
+              delay={{ show: 250, hide: 100 }} 
+              placement="top"
+              onMouseEnter={() => setTooltipVisible(true)}
+              onMouseLeave={() => setTooltipVisible(false)}
+              overlay={renderTooltip(employee)}
+            >
+              <EmployeeBox>
+                <div>
+                  {employee.first_name} {employee.last_name}
+                </div>
+                {isEmployeeSelected(employee) ? (
+                  <span style={{ color: 'green'}}>✓ Assigned!</span>
+                ) : (
+                  <Button variant="primary" onClick={() => handleAssignClick(employee)}>
+                    Assign
+                  </Button>
+                )}
+              </EmployeeBox>
+            </OverlayTrigger>
+          </div>
         ))}
 
         <FormRow>
