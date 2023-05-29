@@ -86,7 +86,7 @@ const AddTask = styled.button`
 
 const TaskContainer = styled.div`
 `
-const Bucket = ({ title, _id, onDelete, projectTitle}) => {
+const Bucket = ({ title, _id, onDelete, projectTitle,modifyIsTaskCreated}) => {
   const inputRef = useRef(null);
 
   const env = JSON.parse(JSON.stringify(import.meta.env));
@@ -127,6 +127,7 @@ const Bucket = ({ title, _id, onDelete, projectTitle}) => {
 
   const handleTaskCreated = (newTask) => {
     setTasks([...tasks, newTask]);
+    modifyIsTaskCreated()
     handleCloseCreateTaskForm()
   };
 

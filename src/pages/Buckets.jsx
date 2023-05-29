@@ -72,6 +72,7 @@ const Buckets = () => {
   const [buckets, setBuckets] = useState([]);
   const [showCreateBucketModal, setShowCreateBucketModal]=useState(false)
   const [showAssignAutomatically, setShowAssignAutomatically] = useState(false)
+  const [isTaskCreated, setIsTaskCreated] = useState(false)
   
   const handleCloseCreateBucket = () => setShowCreateBucketModal(false);
   const handleShowCreateBucket = () => setShowCreateBucketModal(true);
@@ -114,6 +115,7 @@ const Buckets = () => {
           key={index}
           onDelete = {handleBucketDeletion}
           projectTitle={projectTitle}
+          modifyIsTaskCreated={() =>setIsTaskCreated(true)}
           />
         ))}
       </BucketContainer>
@@ -128,6 +130,7 @@ const Buckets = () => {
       showModal={showAssignAutomatically}
       onHide={() =>setShowAssignAutomatically(false)}
       projectID={projectID}
+      isTaskCreated={isTaskCreated}
     />
     </>
     
