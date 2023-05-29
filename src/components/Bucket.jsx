@@ -120,7 +120,6 @@ const Bucket = ({ title, _id, onDelete, projectTitle}) => {
       title: newTitle
     };
     axios.put(path, body, config).then(response => {
-      console.log(response)
     }).catch(error => {
       console.log(error);
     });
@@ -145,7 +144,6 @@ const Bucket = ({ title, _id, onDelete, projectTitle}) => {
     const path = apiUrl+'/tasks/getTasks/'+ _id
     axios.get(path, config)
       .then(response => {
-        console.log(response.data)
         setTasks(response.data);
       })
       .catch(error => {

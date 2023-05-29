@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import Bucket from '../components/Bucket';
 import BucketNavbar from '../components/BucketNavbar';
+import AssignTasksAutomaticallyModal from '../components/AssignTasksAutomaticallyModal';
 
 
 const PageContainer = styled.div`
@@ -70,6 +71,7 @@ const Buckets = () => {
   const token = useSelector((state) => state.user.jwt)
   const [buckets, setBuckets] = useState([]);
   const [showCreateBucketModal, setShowCreateBucketModal]=useState(false)
+  const [showAssignAutomatically, setShowAssignAutomatically] = useState(false)
   
   const handleCloseCreateBucket = () => setShowCreateBucketModal(false);
   const handleShowCreateBucket = () => setShowCreateBucketModal(true);
@@ -102,6 +104,7 @@ const Buckets = () => {
       <BucketNavbar title={projectTitle} _id={projectID}/>
       {user.role === 'manager' && <ButtonContainer>
         <StyledButton onClick={handleShowCreateBucket}>Create Bucket</StyledButton>
+        <StyledButton onClick={()=>setShowAssignAutomatically(true)}>Assign tasks automatically...</StyledButton>
       </ButtonContainer>}
       <BucketContainer role={user.role}>
         {buckets.map((item,index) =>(
@@ -120,8 +123,14 @@ const Buckets = () => {
       onHide={handleCloseCreateBucket} 
       projectID={projectID} 
       onBucketCreated={handleBucketCreated}/>
-    
+
+    <AssignTasksAutomaticallyModal
+      showModal={showAssignAutomatically}
+      onHide={() =>setShowAssignAutomatically(false)}
+      projectID={projectID}
+    />
     </>
+    
   );
 }
 
