@@ -11,11 +11,15 @@ const EmployeeBox = styled.div`
   align-items: center;
   border: 1px solid #ccc;
   border-radius: 5px;
-  padding: 5px 10px;
+  padding: 10px 20px; 
   margin-bottom: 10px;
 `;
 
-const ShowAllUsersModal = ({show, onHide}) => {
+const EmployeeName = styled.div`
+  font-size: 18px; 
+`;
+
+const ShowAllUsersModal = ({ show, onHide , namesChanged}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
@@ -27,33 +31,34 @@ const ShowAllUsersModal = ({show, onHide}) => {
   const [employees, setEmployees] = useState([]);
 
   useEffect(() => {
-    axios.get(apiUrl+'/users/', config)
-      .then(response => {
+    axios
+      .get(apiUrl + '/users/', config)
+      .then((response) => {
         setEmployees(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [namesChanged]);
 
   return (
-      <Modal show={show} onHide={onHide}>
-        <Modal.Header closeButton>
-          <Modal.Title>All Employees</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {employees.map(employee => (
-            <EmployeeBox>
-              <div>{employee.first_name} {employee.last_name}</div>
-            </EmployeeBox>
-          ))}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+    <Modal show={show} onHide={onHide}>
+      <Modal.Header closeButton>
+        <Modal.Title>All Employees</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {employees.map((employee) => (
+          <EmployeeBox>
+            <EmployeeName>{employee.first_name} {employee.last_name}</EmployeeName>
+          </EmployeeBox>
+        ))}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onHide}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 

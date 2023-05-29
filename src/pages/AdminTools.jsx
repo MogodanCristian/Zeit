@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Button } from 'react-bootstrap'
 import CreateUserModal from '../components/AdminTools/CreateUserModal'
 import ShowAllUsersModal from '../components/AdminTools/ShowAllUsersModal'
+import EditUserModal from '../components/AdminTools/EditUserModal'
 
 const StyledButtonContainer = styled.div`
   display: flex;
@@ -26,15 +27,6 @@ const StyledButton = styled(Button)`
 `
 
 const AdminTools = () => {
-  const handleEditUser = () => {
-    // code to edit user details goes here
-    console.log('Edit User button clicked')
-  }
-
-  const handleDeleteUser = () => {
-    // code to delete a user goes here
-    console.log('Delete User button clicked')
-  }
   const [showCreateUser, setShowCreateUser] = useState(false)
   const handleCloseForm = () => setShowCreateUser(false);
   const handleShowForm = () => setShowCreateUser(true);
@@ -42,16 +34,22 @@ const AdminTools = () => {
   const [showAllUsers, setShowAllUsers] = useState(false)
   const handleShowUsersModal = () => setShowAllUsers(true)
   const handleCloseUsersModal = () => setShowAllUsers(false)
+
+  const [editUsers, setEditUsers] = useState(false)
+  const handleShowEdit = () => setEditUsers(true)
+  const handleCloseEdit = () => setEditUsers(false)
+
+  const [namesChanged, setNamesChanged] = useState(false)
   return (
     <>
       <StyledButtonContainer>
         <StyledButton variant="secondary" onClick={handleShowForm}>Create New User</StyledButton>
         <StyledButton variant="secondary" onClick={handleShowUsersModal}>Show All Users</StyledButton>
-        <StyledButton variant="secondary" onClick={handleEditUser}>Edit User Details</StyledButton>
-        <StyledButton variant="danger" onClick={handleDeleteUser}>Delete User</StyledButton>
+        <StyledButton variant="secondary" onClick={handleShowEdit}>Edit User Details</StyledButton>
       </StyledButtonContainer>
       <CreateUserModal show={showCreateUser} onHide={handleCloseForm}/>
-      <ShowAllUsersModal show={showAllUsers} onHide={handleCloseUsersModal}/>
+      <ShowAllUsersModal show={showAllUsers} onHide={handleCloseUsersModal} namesChanged={namesChanged}/>
+      <EditUserModal show={editUsers} onHide={handleCloseEdit} makeVisible={() => setEditUsers(true)} namesChanged={namesChanged} modifyNamesChanged={() =>setNamesChanged(true)}/>
     </>
   )
 }
