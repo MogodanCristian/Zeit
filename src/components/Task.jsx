@@ -11,6 +11,7 @@ import axios from 'axios';
 import AssignTaskModal from './AssignTaskModal';
 import SetPreviousModal from './SetPreviousModal';
 import AddAssistatsModal from './AddAssistantsModal';
+import MoveTaskModal from './MoveTaskModal';
 
 const Container = styled.div`
   display: flex;
@@ -31,7 +32,7 @@ const Title = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100% - 30px);
+  max-width: calc(100% - 120px);
 `;
 
 const Exclamation = styled.span`
@@ -40,7 +41,7 @@ const Exclamation = styled.span`
   font-family: "Pacifico";
 `;
 
-const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitle}) => {
+const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitle, isTaskMoved,modifyIsTaskMoved}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   
@@ -59,6 +60,7 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
   const [showAddAssistants, setShowAddAssistants] = useState(false)
 
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
+  const [showMoveModal, setShowMoveModal] = useState(false)
 
   useEffect(() => {
     if(progress === "Done"){
@@ -71,7 +73,7 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
     else{
       setIsStuck(false)
     }
-  }, [])
+  }, [isTaskMoved])
   
   const showDetailsPage = () =>{
     setShowDetails(true)
@@ -180,7 +182,7 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
         <Dropdown.Toggle as={ThreeDotsToggle} />
         <Dropdown.Menu size="sm" title="" align="end">
           <Dropdown.Item onClick={() => setShowConfirmDelete(true)}>Delete</Dropdown.Item>
-          <Dropdown.Item>Move</Dropdown.Item>
+          <Dropdown.Item onClick={() => setShowMoveModal(true)}>Move</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
     </Container>
@@ -228,6 +230,11 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
           
         />
       }
+        <MoveTaskModal show={showMoveModal} 
+          onHide={() =>setShowMoveModal(false)} 
+          taskID={_id} 
+          modifyIsTaskMoved={modifyIsTaskMoved} 
+          isTaskMoved={isTaskMoved}/>
 
         <Modal show={showConfirmDelete} onHide={() => setShowConfirmDelete(false)}>
             <Modal.Header closeButton>

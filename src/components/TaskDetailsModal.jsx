@@ -48,6 +48,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
     const path = apiUrl+'/tasks/' + _id
     axios.get(path, config)
       .then(response => {
+        console.log(response.data)
         setTask(response.data)
         setPriority(response.data[0].priority)
         setDifficulty(response.data[0].difficulty)

@@ -97,6 +97,11 @@ const Bucket = ({ title, _id, onDelete, projectTitle,modifyIsTaskCreated}) => {
   const [editClicked, setEditClicked] = useState(false);
   const [showCreateTaskForm, setShowCreateTaskForm] = useState(false);
   const [newTitle, setNewTitle] = useState(title);
+  const [isTaskMoved,setIsTaskMoved] = useState(false)
+
+  const modifyTaskMoved = () =>{
+    setIsTaskMoved(!isTaskMoved)
+  }
 
   const handleCloseDelete = () => setShowConfirmDeleteModal(false);
   const handleShowDelete = () => setShowConfirmDeleteModal(true);
@@ -150,7 +155,7 @@ const Bucket = ({ title, _id, onDelete, projectTitle,modifyIsTaskCreated}) => {
       .catch(error => {
         console.log(error);
       });
-  }, [_id])
+  }, [_id, isTaskMoved,tasks])
 
   useEffect(() => {
     if (editClicked) {
@@ -203,17 +208,22 @@ const Bucket = ({ title, _id, onDelete, projectTitle,modifyIsTaskCreated}) => {
       {showCreateTaskForm && <CreateTaskForm bucketID={_id} onTaskCreated={handleTaskCreated} onHide={handleCloseCreateTaskForm}/>}
       <TaskContainer>
         {
-          tasks.map((item,index) => (
-            <Task
-            title={item.title}
-            key={index}
-            _id={item._id}
-            progress={item.progress}
-            removeFromBucket={removeFromBucket}
-            bucketTitle={title}
-            projectTitle={projectTitle}
-            />
-          ))
+          tasks.map((item, index) => {
+            const handleRemoveFromBucket = () => removeFromBucket(item._id);
+            return (
+              <Task
+                title={item.title}
+                key={item._id}
+                _id={item._id}
+                progress={item.progress}
+                removeFromBucket={handleRemoveFromBucket}
+                bucketTitle={title}
+                projectTitle={projectTitle}
+                modifyIsTaskMoved={modifyTaskMoved}
+                isTaskMoved={isTaskMoved}
+              />
+            );
+          })
         }
       </TaskContainer>
       <Modal show={showConfirmDeleteModal} onHide={handleCloseDelete}>

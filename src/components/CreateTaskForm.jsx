@@ -46,7 +46,7 @@ const CreateTaskForm = ({bucketID, onTaskCreated, onHide}) => {
       headers: { 'auth-token': token }
     };
     const path = apiUrl+'/tasks/'+ bucketID
-    axios.post(path, {
+    axios.post('http://localhost:3000/api/tasks/'+bucketID, {
        title: title,
        priority: priority
       }, config)
