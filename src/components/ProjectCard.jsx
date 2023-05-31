@@ -10,6 +10,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import EditProjectModal from './EditProjectModal';
 import { useNavigate } from 'react-router-dom';
+import Tooltip from '@mui/material/Tooltip';
 
 function formatDate(dateString) {
   const startDate = new Date(dateString.substr(0, 10)).toLocaleString('en-US', {
@@ -24,6 +25,9 @@ function formatDate(dateString) {
 
 const StyledCard = styled(Card)`
   margin: 20px;
+  width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const StyledDropdownButton = styled(DropdownButton)`
@@ -66,7 +70,6 @@ const Exclamation = styled.span`
   font-family: "Pacifico";
 `;
 
-
 const ProjectCard = ({project,index, onDelete}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
@@ -84,6 +87,8 @@ const ProjectCard = ({project,index, onDelete}) => {
 
 
   const [hasProblems,setHasProblems] = useState(false)
+
+  const [showDescriptionTooltip, setShowDescriptionTooltip] = useState(false)
 
   const handleCloseEdit = () => setShowEditModal(false);
   const handleShowEdit = () => setShowEditModal(true);
@@ -121,6 +126,7 @@ const ProjectCard = ({project,index, onDelete}) => {
     });
   };
 
+
   return (
     <StyledCard 
       text={'white'}
@@ -134,11 +140,17 @@ const ProjectCard = ({project,index, onDelete}) => {
           <Dropdown.Item onClick={handleShowDelete}>Delete</Dropdown.Item>
         </StyledDropdownButton>}
       </StyledCard.Header>
-      <StyledCard.Body onClick={()=>{navigate('/projects/'+project._id + '/'+ project.title + '/buckets')}}>
+      <StyledCard.Body onClick={() => {navigate('/projects/' + project._id + '/' + project.title + '/buckets')}}>
         <StyledCard.Title>{hasProblems && <Exclamation>!</Exclamation>} {project.title}</StyledCard.Title>
-        <StyledCard.Text>
-          {project.description}
-        </StyledCard.Text>
+        {project.description.length > 20 ? (
+            <Tooltip title={<span style={{fontSize:"15px"}}>{project.description}</span>} arrow>
+              <StyledCard.Text>
+                {project.description.slice(0, 20) + '...'}
+              </StyledCard.Text>
+            </Tooltip>)
+         : (
+          <StyledCard.Text>{project.description}</StyledCard.Text>
+        )}
         <StyledCard.Text>
           Start Date: {formatDate(project.start_date)}
         </StyledCard.Text>
