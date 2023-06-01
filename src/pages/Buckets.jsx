@@ -115,7 +115,7 @@ const Buckets = () => {
           key={index}
           onDelete = {handleBucketDeletion}
           projectTitle={projectTitle}
-          modifyIsTaskCreated={() =>setIsTaskCreated(true)}
+          modifyIsTaskCreated={() =>setIsTaskCreated(!isTaskCreated)}
           />
         ))}
       </BucketContainer>

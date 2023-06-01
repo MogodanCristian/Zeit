@@ -18,7 +18,6 @@ const AssignTasksAutomaticallyModal = ({ showModal, onHide, projectID , isTaskCr
       .get('http://localhost:3000/api/projects/' + projectID + '/getUnassignedTasks', config)
       .then((res) => {
         setTasks(res.data);
-        console.log(res.data);
       })
       .catch((error) => {
         console.error(error);
@@ -51,7 +50,6 @@ const AssignTasksAutomaticallyModal = ({ showModal, onHide, projectID , isTaskCr
           );
         }
 
-        setMessage('All tasks have been assigned successfully!');
       } catch (error) {
         console.error(error);
       }
@@ -59,8 +57,10 @@ const AssignTasksAutomaticallyModal = ({ showModal, onHide, projectID , isTaskCr
   };
 
   const handleClose = async () => {
+    setMessage('Please wait for the modal to close.')
     await handleAssign();
     onHide();
+    window.location.reload()
   };
 
   return (
@@ -76,7 +76,6 @@ const AssignTasksAutomaticallyModal = ({ showModal, onHide, projectID , isTaskCr
               the employee performance.
             </p>
             <p>These tasks will be assigned upon clicking the button:</p>
-            {message && <span style={{ color: 'green' }}>{message}</span>}
             {tasks.map((task) => (
               <p key={task._id} style={{ color: 'green' }}>
                 {task.title}
@@ -86,6 +85,7 @@ const AssignTasksAutomaticallyModal = ({ showModal, onHide, projectID , isTaskCr
         ) : (
           <p style={{ color: 'red' }}>There are no tasks to be assigned automatically!</p>
         )}
+        {message && <span>{message}</span>}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>

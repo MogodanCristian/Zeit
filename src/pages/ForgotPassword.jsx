@@ -131,7 +131,7 @@ const ForgotPassword = () => {
                   email:email
                 }).then(response =>{
                   if(response.data){
-                    navigate('/changePassword/'+response.data._id)
+                    navigate('/changePassword/'+response.data._id+'/'+code)
                   }
                   else{
                     setErrorMessage("You are not registered!")

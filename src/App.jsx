@@ -56,7 +56,7 @@ function App() {
         <Routes>
           <Route path='/login' element={user ? <Navigate to={'/'} /> : <Login />} />
           <Route path = '/forgotPassword' element={user? <Navigate to={'/'}/>:<ForgotPassword/>}/>
-          <Route path = '/changePassword/:userID' element={user? <Navigate to={'/'}/>:<ChangePassword/>}/>
+          <Route path = '/changePassword/:userID/:securityCode' element={user? <Navigate to={'/'}/>:<ChangePassword/>}/>
           <Route path='/unauthorized' element={user ? <Unauthorized /> : <Navigate to={'/login'} />} />
           {user === null ? (
             <Route path='*' element={<Navigate to='/login' replace />} />

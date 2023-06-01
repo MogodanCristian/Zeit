@@ -227,6 +227,7 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
             setShowAddAssistants(false)
             showDetailsPage()
           }}
+          taskID={_id}
           
         />
       }

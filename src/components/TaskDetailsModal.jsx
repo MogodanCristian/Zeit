@@ -252,7 +252,9 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           showAddAssistants()
           handleSaveChanges()
           onHide()
-        }}>Add assistants...</Button>
+        }}
+        disabled={isAssignedTo === null}
+        >Add assistants...</Button>
         </FormRow>
         
         <FormRow>
