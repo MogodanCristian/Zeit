@@ -93,12 +93,14 @@ const TooltipTitle = styled(Title)`
   text-overflow: ellipsis;
 `;
 
-const Bucket = ({ title, _id, onDelete, projectTitle, modifyIsTaskCreated }) => {
+const Bucket = ({ title, _id, onDelete, projectTitle, modifyIsTaskCreated , projectID}) => {
   const inputRef = useRef(null);
 
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
+  const user = useSelector((state) => state.user.currentUser);
+
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [editClicked, setEditClicked] = useState(false);
@@ -157,14 +159,22 @@ const Bucket = ({ title, _id, onDelete, projectTitle, modifyIsTaskCreated }) => 
       headers: { 'auth-token': token }
     };
     const path = apiUrl + '/tasks/getTasks/' + _id;
-    axios
+    if(user.role === 'employee')
+    {
+      axios.get('http://localhost:3000/api/tasks/getEmployeeTasks/'+projectID+'/'+user._id)
+      .then(response =>{
+        setTasks(response.data)
+      })
+    }
+    else {
+      axios
       .get(path, config)
       .then((response) => {
         setTasks(response.data);
       })
       .catch((error) => {
         console.log(error);
-      });
+      });}
   }, [_id, isTaskMoved, tasks]);
 
   useEffect(() => {
@@ -227,9 +237,9 @@ const Bucket = ({ title, _id, onDelete, projectTitle, modifyIsTaskCreated }) => 
           </Dropdown>
         </TitleContainer>
         <Separator />
-        <AddTask onClick={() => setShowCreateTaskForm(!showCreateTaskForm)}>
+        {user.role === 'manager' &&<AddTask onClick={() => setShowCreateTaskForm(!showCreateTaskForm)}>
           + Add task
-        </AddTask>
+        </AddTask>}
         {showCreateTaskForm && (
           <CreateTaskForm
             bucketID={_id}

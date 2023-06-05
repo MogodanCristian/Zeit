@@ -15,6 +15,15 @@ const PageContainer = styled.div`
   flex-direction: column;
 `
 
+const NoBucketsMessage = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 24px;
+  font-weight: bold;
+`;
+
 const BucketContainer = styled.div`
   margin-top: ${props => props.role === 'employee' ? '70px' : '30px'};
   display: block;
@@ -90,13 +99,22 @@ const Buckets = () => {
       headers: { 'auth-token': token }
     };
     const path = apiUrl+'/buckets/getBuckets/'+ projectID
-    axios.get(path, config)
+    if(user.role === 'employee'){
+      axios.get('http://localhost:3000/api/buckets/getEmployeeBuckets/'+projectID+'/'+user._id)
+      .then(response =>{
+        setBuckets(response.data)
+      })
+    }
+    else{
+      axios.get(path, config)
       .then(response => {
         setBuckets(response.data);
       })
       .catch(error => {
         console.error(error);
       });
+    }
+    
   }, [projectID]);
 
   return (
@@ -108,16 +126,21 @@ const Buckets = () => {
         <StyledButton onClick={()=>setShowAssignAutomatically(true)}>Assign tasks automatically...</StyledButton>
       </ButtonContainer>}
       <BucketContainer role={user.role}>
-        {buckets.map((item,index) =>(
-          <Bucket
-          title={item.title}
-          _id={item._id}
-          key={index}
-          onDelete = {handleBucketDeletion}
-          projectTitle={projectTitle}
-          modifyIsTaskCreated={() =>setIsTaskCreated(!isTaskCreated)}
-          />
-        ))}
+      {buckets.length === 0 ? (
+            <NoBucketsMessage>No buckets to display!</NoBucketsMessage  >
+          ) : (
+            buckets.map((item, index) => (
+              <Bucket
+                title={item.title}
+                _id={item._id}
+                key={index}
+                onDelete={handleBucketDeletion}
+                projectTitle={projectTitle}
+                modifyIsTaskCreated={() => setIsTaskCreated(!isTaskCreated)}
+                projectID={projectID}
+              />
+            ))
+          )}
       </BucketContainer>
     </PageContainer>
     <CreateBucketModal 
