@@ -34,7 +34,7 @@ const AddAssistantsModal = ({ show, onHide, taskID }) => {
           .get(
             'http://localhost:3000/api/projects/' +
               response.data._id +
-              '/employees',
+              '/availableForAssist/'+taskID,
             config
           )
           .then((employeeRes) => {

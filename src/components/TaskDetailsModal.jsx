@@ -38,6 +38,11 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
   const [isAssignedTo, setIsAssignedTo] = useState(null)
   const [previous, setPrevious] = useState(null)
 
+  const [startDate, setStartDate] = useState(null)
+  const [startTime, setStartTime] = useState(null)
+  const [endDate, setEndDate] = useState(null)
+  const [endTime, setEndTime] = useState(null)
+
   const [priority, setPriority] = useState(null)
   const [difficulty, setDifficulty] = useState(null)
 
@@ -53,6 +58,16 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         setPriority(response.data[0].priority)
         setDifficulty(response.data[0].difficulty)
         setProgress(response.data[0].progress)
+        if (response.data[0].start_date) {
+          setStartDate(response.data[0].start_date.substr(0, 10));
+          setStartTime(response.data[0].start_date.slice(11, 16));
+        }
+        
+        if (response.data[0].end_date) {
+          setEndDate(response.data[0].end_date.substr(0, 10));
+          setEndTime(response.data[0].end_date.slice(11, 16));
+        }
+
         if(response.data[0].completed_by){
         axios.get(apiUrl + '/users/getDetails/' + response.data[0].completed_by, config)
         .then(userResponse => {
@@ -83,34 +98,47 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
   }, []);
 
   const handleSaveChanges = () => {
-    if(isModified)
-      {
-        handleTaskUpdate(title);
-      }
-    if(progress === "Done")
-    {
-      handleCheck()
-      Unstuck()
+    if (isModified) {
+      handleTaskUpdate(title);
     }
-    else if(progress === "Stuck"){
-      handleStuck()
-      Uncheck()
-    }
-    else{
-      Uncheck()
-      Unstuck()
+    if (progress === "Done") {
+      handleCheck();
+      Unstuck();
+    } else if (progress === "Stuck") {
+      handleStuck();
+      Uncheck();
+    } else {
+      Uncheck();
+      Unstuck();
     }
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = apiUrl+'/tasks/' + _id;
-
-    axios.put(path, task, config)
+  
+    let startDateTime = null;
+    let endDateTime = null;
+  
+    if (startDate && startTime) {
+      startDateTime = new Date(`${startDate}T${startTime}:00`);
+      startDateTime.setHours(startDateTime.getHours() + 3); // Increment start date by 3 hours
+      startDateTime = startDateTime.toISOString();
+    }
+  
+    if (endDate && endTime) {
+      endDateTime = new Date(`${endDate}T${endTime}:00`);
+      endDateTime.setHours(endDateTime.getHours() + 3); // Increment end date by 3 hours
+      endDateTime = endDateTime.toISOString();
+    }
+  
+    setTask({ ...task, start_date: startDateTime, end_date: endDateTime });
+  
+    const path = apiUrl + '/tasks/' + _id;
+  
+    axios.put(path, { ...task, start_date: startDateTime, end_date: endDateTime }, config)
       .catch(error => {
         console.error(error);
       });
   }
-
   const handleAssignTask = () => {
 
     handleSaveChanges();
@@ -152,7 +180,6 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           defaultValue={task[0].description}
           onChange={(e) =>{
             setTask({ ...task, description: e.target.value })
-            console.log(task)
           }
           }
         />
@@ -202,34 +229,38 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           <Form.Label>Start Date:</Form.Label>
           <Form.Control
             type="date"
-            defaultValue={task.startDate}
-            onChange={(e) =>
-              setTask({ ...task, startDate: e.target.value })
-            }
+            defaultValue={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
           />
         </Form.Group>
         <Form.Group style={{ width: "48%" }}>
           <Form.Label>Start Time</Form.Label>
-          <Form.Control type="time" defaultValue="00:00"/>
+          <Form.Control
+            type="time"
+            defaultValue={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+          />
         </Form.Group>
-        </FormRow>
-        
-        <FormRow>
-          <Form.Group style={{ width: "48%" }}>
-            <Form.Label>End Date:</Form.Label>
-            <Form.Control
-              type="date"
-              defaultValue={task.endDate}
-              onChange={(e) =>
-                setTask({ ...task, endDate: e.target.value })
-              }
-              />
-          </Form.Group>
-          <Form.Group style={{ width: "48%" }}>
-            <Form.Label>End Time</Form.Label>
-            <Form.Control type="time" defaultValue="00:00"/>
+      </FormRow>
+
+      <FormRow>
+        <Form.Group style={{ width: "48%" }}>
+          <Form.Label>End Date:</Form.Label>
+          <Form.Control
+            type="date"
+            defaultValue={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
         </Form.Group>
-        </FormRow>
+        <Form.Group style={{ width: "48%" }}>
+          <Form.Label>End Time</Form.Label>
+          <Form.Control
+            type="time"
+            defaultValue={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+          />
+        </Form.Group>
+      </FormRow>
         
         <FormRow>
           <Button style={{

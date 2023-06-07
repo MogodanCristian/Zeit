@@ -79,6 +79,7 @@ const EditUserModal = ({
           if (response.status === 200) {
             setAllGood(true);
             modifyNamesChanged();
+            onHide()
           }
         });
     }
