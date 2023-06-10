@@ -20,6 +20,7 @@ import AdminTools from './pages/AdminTools'
 import Charts from './pages/Charts'
 import ChangePassword from './pages/ChangePassword'
 import Messages from './pages/Messages'
+import Support from './pages/Support'
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
@@ -68,6 +69,7 @@ function App() {
               <Route path = '/projects/:projectID/:projectTitle/buckets' element={<Buckets/>}/>
               <Route path='/tools' element={user.role === 'admin'? <AdminTools/> : <Unauthorized/>}/>
               <Route path='/projects/:projectID/:projectTitle/charts' element={<Charts/>}/>
+              <Route path='/support' element={<Support/>}/>
             </>
           )}
         </Routes>

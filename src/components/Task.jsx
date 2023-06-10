@@ -73,7 +73,7 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
     else{
       setIsStuck(false)
     }
-  }, [isTaskMoved])
+  }, [isTaskMoved,progress])
   
   const showDetailsPage = () =>{
     setShowDetails(true)
@@ -114,7 +114,6 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
       completed_by: null
     }, config)
       .then(response => {
-        console.log(response.data);
       })
       .catch(error => {
         console.error(error);
@@ -186,6 +185,8 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
         </Dropdown.Menu>
       </Dropdown>
     </Container>
+
+    
     {showDetails && <TaskDetailsModal 
       show={showDetails} 
       onHide={hideDetailsPage} 

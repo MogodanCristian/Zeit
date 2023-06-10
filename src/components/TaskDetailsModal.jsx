@@ -29,6 +29,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
   const apiUrl = env.VITE_ZEIT_API_URL;
   
   const token = useSelector((state) => state.user.jwt)
+  const user = useSelector((state) => state.user.currentUser);
   
   const [task, setTask] = useState(null)
   const [title, setTitle] = useState('');
@@ -165,6 +166,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         <Form.Control
           type="text"
           defaultValue={task[0].title}
+          disabled={user.role === 'employee'}
           onChange={(e) => {
             setTask({ ...task, title: e.target.value })
             setIsModified(true)
@@ -178,6 +180,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           as={"textarea"}
           rows={2}
           defaultValue={task[0].description}
+          disabled={user.role === 'employee'}
           onChange={(e) =>{
             setTask({ ...task, description: e.target.value })
           }
@@ -188,7 +191,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
       <FormRow style={{marginBottom:"30px"}}>
         <Form.Group style={{ width: "31%" }}>
           <Form.Label>Priority:</Form.Label>
-          <Form.Select aria-label="Priority" defaultValue={task[0].priority} onChange={(e) => {
+          <Form.Select aria-label="Priority" disabled={user.role === 'employee'} defaultValue={task[0].priority} onChange={(e) => {
             setTask({ ...task, priority: e.target.value })
             setPriority(e.target.value)
           }}>
@@ -212,7 +215,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         </Form.Group>
         <Form.Group style={{ width: "31%" }}>
           <Form.Label>Difficulty:</Form.Label>
-          <Form.Select aria-label="Difficulty" defaultValue={task[0].difficulty} onChange={(e) => {
+          <Form.Select aria-label="Difficulty" defaultValue={task[0].difficulty} disabled={user.role === 'employee'} onChange={(e) => {
             setTask({ ...task, difficulty: e.target.value })
             setDifficulty(e.target.value)
           }}>
@@ -231,6 +234,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
             type="date"
             defaultValue={startDate}
             onChange={(e) => setStartDate(e.target.value)}
+            disabled={user.role === 'employee'}
           />
         </Form.Group>
         <Form.Group style={{ width: "48%" }}>
@@ -239,6 +243,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
             type="time"
             defaultValue={startTime}
             onChange={(e) => setStartTime(e.target.value)}
+            disabled={user.role === 'employee'}
           />
         </Form.Group>
       </FormRow>
@@ -250,6 +255,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
             type="date"
             defaultValue={endDate}
             onChange={(e) => setEndDate(e.target.value)}
+            disabled={user.role === 'employee'}
           />
         </Form.Group>
         <Form.Group style={{ width: "48%" }}>
@@ -258,11 +264,12 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
             type="time"
             defaultValue={endTime}
             onChange={(e) => setEndTime(e.target.value)}
+            disabled={user.role === 'employee'}
           />
         </Form.Group>
       </FormRow>
         
-        <FormRow>
+       {user.role === 'manager' && <FormRow>
           <Button style={{
             width:"31%",
             marginTop:"20px"
@@ -286,7 +293,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         }}
         disabled={isAssignedTo === null}
         >Add assistants...</Button>
-        </FormRow>
+        </FormRow>}
         
         <FormRow>
           <Form.Label>Previous task that must be completed:</Form.Label> 

@@ -36,5 +36,10 @@ export const SidebarDataAdmin = [
   title: 'Tools',
   path: '/tools',
   icon: <AiIcons.AiFillTool/>
-}                                        
+},
+{
+  title: 'Support',
+  path: '/support',
+  icon: <IoIcons.IoMdHelpCircle />,
+},                                   
 ]
