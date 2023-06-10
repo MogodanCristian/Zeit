@@ -53,7 +53,6 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
 
   const handleRemoveClick = (index, employee_id) => {
     setClickedIndexes([...clickedIndexes, index]);
-    console.log(employee_id)
     const config = {
         headers: { 'auth-token': token }
       };
@@ -61,10 +60,10 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
      axios.patch(path,{
         employee_id: employee_id
       }, config).then(() => {
-        console.log(response)
       }).catch((error) => {
         console.log(error);
       });
+      axios.put('http://localhost:3000/api/tasks/setToUnassigned/' +projectID +'/'+employee_id)
 
   }
 

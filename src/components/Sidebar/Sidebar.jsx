@@ -140,7 +140,7 @@ function Sidebar() {
             </NavbarToggle>
             {sidebarData.map((item, index) => {
               if (item.title === 'Messages' && user.role === 'employee') {
-                return null; // Skip rendering the "Messages" option for employees
+                return null; 
               }
               return (
                 <NavText key={index}>
