@@ -57,14 +57,17 @@ const EditUserModal = ({
 
   useEffect(() => {
     axios
-      .get(apiUrl + '/users/', config)
+      .get('http://localhost:3000/api/users/', config)
       .then((response) => {
-        setEmployees(response.data);
+        const activeEmployees = response.data.filter(
+            (employee) => employee.account_active
+          );
+          setEmployees(activeEmployees);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, [namesChanged]);
+  }, []);
 
   const handleSubmit = () => {
     if (employeeID) {
@@ -124,7 +127,7 @@ const EditUserModal = ({
         </Modal.Header>
         <Modal.Body>
           {employees.map((employee) => (
-            <EmployeeBox key={employee.id}>
+            <EmployeeBox key={employee._id}>
               <EmployeeName>
                 {employee.first_name} {employee.last_name}
               </EmployeeName>
@@ -195,6 +198,7 @@ const EditUserModal = ({
                 <option value="admin">Admin</option>
               </Form.Control>
             </Form.Group>
+
           </Form>
           {error && <Error>{errorMessage}</Error>}
           {allGood && (

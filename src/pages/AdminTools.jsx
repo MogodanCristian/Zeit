@@ -4,6 +4,7 @@ import { Button } from 'react-bootstrap'
 import CreateUserModal from '../components/AdminTools/CreateUserModal'
 import ShowAllUsersModal from '../components/AdminTools/ShowAllUsersModal'
 import EditUserModal from '../components/AdminTools/EditUserModal'
+import FireUserModal from '../components/AdminTools/FireUserModal'
 
 const StyledButtonContainer = styled.div`
   display: flex;
@@ -39,6 +40,10 @@ const AdminTools = () => {
   const handleShowEdit = () => setEditUsers(true)
   const handleCloseEdit = () => setEditUsers(false)
 
+  const [fireUsers, setFireUsers] = useState(false)
+  const handleShowFire = () => setFireUsers(true)
+  const handleCloseFire = () => setFireUsers(false)
+
   const [namesChanged, setNamesChanged] = useState(false)
   return (
     <>
@@ -46,10 +51,12 @@ const AdminTools = () => {
         <StyledButton variant="secondary" onClick={handleShowForm}>Create New User</StyledButton>
         <StyledButton variant="secondary" onClick={handleShowUsersModal}>Show All Users</StyledButton>
         <StyledButton variant="secondary" onClick={handleShowEdit}>Edit User Details</StyledButton>
+        <StyledButton variant="danger" onClick={handleShowFire}>Fire employee</StyledButton>
       </StyledButtonContainer>
       <CreateUserModal show={showCreateUser} onHide={handleCloseForm}/>
       <ShowAllUsersModal show={showAllUsers} onHide={handleCloseUsersModal} namesChanged={namesChanged}/>
       <EditUserModal show={editUsers} onHide={handleCloseEdit} makeVisible={() => setEditUsers(true)} namesChanged={namesChanged} modifyNamesChanged={() =>setNamesChanged(true)}/>
+      <FireUserModal show={fireUsers} onHide={handleCloseFire}/>
     </>
   )
 }

@@ -110,6 +110,11 @@ const Login = () => {
     .then((response) => {
       const token = response.data;
       const user = jwt(token)
+      if(!user.account_active){
+        dispatch(loginFailure())
+        setLoginFail(true)
+        return;
+      }
       if(user.first_login){
         dispatch(successDataFetching())
         navigate('/changePassword/'+user._id)

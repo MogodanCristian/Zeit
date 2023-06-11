@@ -19,6 +19,10 @@ const EmployeeName = styled.div`
   font-size: 18px; 
 `;
 
+const ActiveStatus = styled.span`
+  color: ${(props) => (props.active ? 'green' : 'red')};
+`;
+
 const ShowAllUsersModal = ({ show, onHide , namesChanged}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
@@ -32,9 +36,10 @@ const ShowAllUsersModal = ({ show, onHide , namesChanged}) => {
 
   useEffect(() => {
     axios
-      .get(apiUrl + '/users/', config)
+      .get( 'http://localhost:3000/api/users/', config)
       .then((response) => {
         setEmployees(response.data);
+        console.log(response.data)
       })
       .catch((error) => {
         console.log(error);
@@ -50,6 +55,9 @@ const ShowAllUsersModal = ({ show, onHide , namesChanged}) => {
         {employees.map((employee) => (
           <EmployeeBox>
             <EmployeeName>{employee.first_name} {employee.last_name}</EmployeeName>
+            <ActiveStatus active={employee.account_active}>
+              Active:{employee.account_active.toString()}
+            </ActiveStatus>
           </EmployeeBox>
         ))}
       </Modal.Body>

@@ -47,6 +47,7 @@ const Dashboard = () => {
       .get('http://localhost:3000/api/users/getPerformanceDetails/' + user._id)
       .then((response) => {
         setEmployeePerformanceData(response.data);
+        console.log(response.data)
       });
       axios.get('http://localhost:3000/api/users/performance/' + user._id).then((response) =>{
         setPerformanceLevel(response.data)

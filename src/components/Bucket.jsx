@@ -193,6 +193,7 @@ const Bucket = ({ title, _id, onDelete, projectTitle, modifyIsTaskCreated , proj
       .then((response) => {
         onDelete(_id);
         handleCloseDelete();
+        window.location.reload()
       })
       .catch((error) => {
         console.log(error);
