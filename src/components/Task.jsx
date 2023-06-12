@@ -121,6 +121,7 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
   }
 
   const handleStuck = async () => {
+    console.log("Am intrat")
     setIsStuck(true);
     const config = {
       headers: { 'auth-token': token },
@@ -143,11 +144,12 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
     try {
       const response = await axios.get(apiUrl + '/projects/' + projectTitle + '/getManager', config);
       if (user._id !== response.data.manager_id) {
-        await axios.post(apiUrl + '/messages', {
+        const messageRes = await axios.post(apiUrl + '/messages', {
           subject: subject,
           body: body,
           user: response.data.manager_id,
         }, config);
+        console.log(messageRes)
       }
     } catch (error) {
       console.error(error);

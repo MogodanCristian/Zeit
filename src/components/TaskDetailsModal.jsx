@@ -47,6 +47,8 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
   const [priority, setPriority] = useState(null)
   const [difficulty, setDifficulty] = useState(null)
 
+  const [isProgressModified, setIsProgressModified] = useState(false)
+
   useEffect(() => {
     const config = {
       headers: { 'auth-token': token }
@@ -98,16 +100,17 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
       });
   }, []);
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async() => {
     if (isModified) {
       handleTaskUpdate(title);
     }
     if (progress === "Done") {
       handleCheck();
       Unstuck();
-    } else if (progress === "Stuck") {
-      handleStuck();
+    } else if (progress === "Stuck" && isProgressModified) {
+      await handleStuck();
       Uncheck();
+      setIsProgressModified(false)
     } else {
       Uncheck();
       Unstuck();
@@ -205,6 +208,8 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           <Form.Label>Progress:</Form.Label>
           <Form.Select aria-label="Progress" defaultValue={task[0].progress} disabled={isAssignedTo === null ? true : false} onChange={(e) => {
             setTask({ ...task, progress: e.target.value })
+            setProgress(e.target.value)
+            setIsProgressModified(true)
           }
         }>
             <option value="Not Started">Not Started</option>

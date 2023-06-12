@@ -175,7 +175,7 @@ const Bucket = ({ title, _id, onDelete, projectTitle, modifyIsTaskCreated , proj
       .catch((error) => {
         console.log(error);
       });}
-  }, [_id, isTaskMoved, tasks]);
+  }, [_id, isTaskMoved]);
 
   useEffect(() => {
     if (editClicked) {
@@ -229,13 +229,13 @@ const Bucket = ({ title, _id, onDelete, projectTitle, modifyIsTaskCreated , proj
               <TooltipTitle>{newTitle}</TooltipTitle>
             </Tooltip>
           )}
-          <Dropdown drop="left">
+          {user.role === 'manager' &&<Dropdown drop="left">
             <Dropdown.Toggle as={ThreeDotsToggle} />
             <Dropdown.Menu size="sm" title="" align="end">
               <Dropdown.Item onClick={handleEdit}>Edit...</Dropdown.Item>
               <Dropdown.Item onClick={handleShowDelete}>Delete</Dropdown.Item>
             </Dropdown.Menu>
-          </Dropdown>
+          </Dropdown>}
         </TitleContainer>
         <Separator />
         {user.role === 'manager' &&<AddTask onClick={() => setShowCreateTaskForm(!showCreateTaskForm)}>
