@@ -13,11 +13,14 @@ import Login from './pages/Login'
 import { loginSuccess } from './redux/userReducer'
 import Projects from './pages/Projects'
 import Unauthorized from './pages/Unauthorized'
-import Team from './pages/Team'
 import AdminDashboard from './pages/AdminDashboard'
 import ForgotPassword from './pages/ForgotPassword'
 import Buckets from './pages/Buckets'
 import AdminTools from './pages/AdminTools'
+import Charts from './pages/Charts'
+import ChangePassword from './pages/ChangePassword'
+import Messages from './pages/Messages'
+import Support from './pages/Support'
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
@@ -53,17 +56,20 @@ function App() {
         {user && <Sidebar />}
         <Routes>
           <Route path='/login' element={user ? <Navigate to={'/'} /> : <Login />} />
+          <Route path = '/forgotPassword' element={user? <Navigate to={'/'}/>:<ForgotPassword/>}/>
+          <Route path = '/changePassword/:userID/:securityCode' element={user? <Navigate to={'/'}/>:<ChangePassword/>}/>
           <Route path='/unauthorized' element={user ? <Unauthorized /> : <Navigate to={'/login'} />} />
           {user === null ? (
             <Route path='*' element={<Navigate to='/login' replace />} />
           ) : (
             <>
               <Route path='/' element={user.role === 'admin'? <AdminDashboard/> :<Dashboard />} />
-              <Route path='/team' element={<Team />} />
               <Route path='/projects' element={<Projects />} />
-              <Route path = '/forgotPassword' element={<ForgotPassword/>}/>
+              <Route path='/messages' element={<Messages/>}/>
               <Route path = '/projects/:projectID/:projectTitle/buckets' element={<Buckets/>}/>
               <Route path='/tools' element={user.role === 'admin'? <AdminTools/> : <Unauthorized/>}/>
+              <Route path='/projects/:projectID/:projectTitle/charts' element={<Charts/>}/>
+              <Route path='/support' element={<Support/>}/>
             </>
           )}
         </Routes>

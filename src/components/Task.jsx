@@ -11,6 +11,7 @@ import axios from 'axios';
 import AssignTaskModal from './AssignTaskModal';
 import SetPreviousModal from './SetPreviousModal';
 import AddAssistatsModal from './AddAssistantsModal';
+import MoveTaskModal from './MoveTaskModal';
 
 const Container = styled.div`
   display: flex;
@@ -31,10 +32,16 @@ const Title = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100% - 30px);
+  max-width: calc(100% - 120px);
 `;
 
-const Task = ({ title, _id, progress, removeFromBucket}) => {
+const Exclamation = styled.span`
+  color: red;
+  font-size: 25px;
+  font-family: "Pacifico";
+`;
+
+const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitle, isTaskMoved,modifyIsTaskMoved}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   
@@ -44,18 +51,29 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
   const [titleState, setTitleState] = useState(title)
   const [isChecked, setIsChecked] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [isStuck, setIsStuck] = useState(false)
+  const [priority, setPriority] = useState(null)
+  const [difficulty, setDifficulty] = useState(null)
 
   const [showAssignTask, setShowAssignTask] = useState(false)
   const [showSetPrevious, setShowSetPrevious] = useState(false)
   const [showAddAssistants, setShowAddAssistants] = useState(false)
 
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
+  const [showMoveModal, setShowMoveModal] = useState(false)
 
   useEffect(() => {
     if(progress === "Done"){
       setIsChecked(true)
+      setIsStuck(false)
     }
-  }, [])
+    if(progress === "Stuck"){
+      setIsStuck(true)
+    }
+    else{
+      setIsStuck(false)
+    }
+  }, [isTaskMoved,progress])
   
   const showDetailsPage = () =>{
     setShowDetails(true)
@@ -83,9 +101,8 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
       .catch(error => {
         console.error(error);
       });
-    
-    
   }
+
   const Uncheck =() =>{
     setIsChecked(false)
     const config = {
@@ -97,11 +114,51 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
       completed_by: null
     }, config)
       .then(response => {
-        console.log(response.data);
       })
       .catch(error => {
         console.error(error);
       });
+  }
+
+  const handleStuck = async () => {
+    console.log("Am intrat")
+    setIsStuck(true);
+    const config = {
+      headers: { 'auth-token': token },
+    };
+    const path = apiUrl + '/tasks/' + _id;
+    const subject = 'Help needed!';
+    const body =
+      'The employee ' +
+      user.first_name +
+      ' ' +
+      user.last_name +
+      ' is currently having problems with the task ' +
+      title +
+      ', from the bucket of tasks called ' +
+      bucketTitle +
+      ' and the project ' +
+      projectTitle +
+      '. Go investigate and take some measures regarding the issue.';
+  
+    try {
+      const response = await axios.get(apiUrl + '/projects/' + projectTitle + '/getManager', config);
+      if (user._id !== response.data.manager_id) {
+        const messageRes = await axios.post(apiUrl + '/messages', {
+          subject: subject,
+          body: body,
+          user: response.data.manager_id,
+        }, config);
+        console.log(messageRes)
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+
+  const handleUnstuck = () =>{
+    setIsStuck(false)
   }
 
   const handleDelete = () =>{
@@ -125,15 +182,23 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
         checkedIcon={<CheckCircleIcon />}
         checked={isChecked}
       />
-      <Title style={{textDecoration: isChecked? 'line-through' : 'none'}} onClick={showDetailsPage}>{titleState}</Title>
+      <div>
+        <Title style={{textDecoration: isChecked? 'line-through' : 'none'}} onClick={showDetailsPage}>
+          {titleState}
+        </Title>
+        {isStuck &&<Exclamation>!</Exclamation>}
+      </div>
+      
       <Dropdown drop="left">
         <Dropdown.Toggle as={ThreeDotsToggle} />
         <Dropdown.Menu size="sm" title="" align="end">
           <Dropdown.Item onClick={() => setShowConfirmDelete(true)}>Delete</Dropdown.Item>
-          <Dropdown.Item>Move</Dropdown.Item>
+          <Dropdown.Item onClick={() => setShowMoveModal(true)}>Move</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
     </Container>
+
+    
     {showDetails && <TaskDetailsModal 
       show={showDetails} 
       onHide={hideDetailsPage} 
@@ -141,9 +206,15 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
       handleTaskUpdate={handleTaskUpdate}
       handleCheck={setToChecked}
       Uncheck={Uncheck}
-      showAssignTask={() =>{setShowAssignTask(true)}}
+      showAssignTask={(priority, difficulty) =>{
+        setPriority(priority)
+        setDifficulty(difficulty)
+        setShowAssignTask(true)
+      }}
       showSetPrevious={() =>{setShowSetPrevious(true)}}
-      showAddAssistants={() =>{setShowAddAssistants(true)}}/>}
+      showAddAssistants={() =>{setShowAddAssistants(true)}}
+      handleStuck={handleStuck}
+      Unstuck={handleUnstuck}/>}
       {showAssignTask && <AssignTaskModal
         show={showAssignTask}
         onHide={() => {
@@ -151,6 +222,8 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
           showDetailsPage()
         }}
         _id={_id}
+        priority={priority}
+        difficulty={difficulty}
       />}
       {showSetPrevious && <SetPreviousModal
           show={showSetPrevious}
@@ -167,9 +240,15 @@ const Task = ({ title, _id, progress, removeFromBucket}) => {
             setShowAddAssistants(false)
             showDetailsPage()
           }}
+          taskID={_id}
           
         />
       }
+        <MoveTaskModal show={showMoveModal} 
+          onHide={() =>setShowMoveModal(false)} 
+          taskID={_id} 
+          modifyIsTaskMoved={modifyIsTaskMoved} 
+          isTaskMoved={isTaskMoved}/>
 
         <Modal show={showConfirmDelete} onHide={() => setShowConfirmDelete(false)}>
             <Modal.Header closeButton>

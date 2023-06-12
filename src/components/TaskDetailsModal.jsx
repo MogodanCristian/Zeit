@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
@@ -24,11 +24,12 @@ const EmployeeBox = styled.div`
   margin-bottom: 10px;
 `
 
-const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Uncheck, showAssignTask, showSetPrevious, showAddAssistants}) => {
+const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Uncheck, showAssignTask, showSetPrevious, showAddAssistants, handleStuck, Unstuck}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   
   const token = useSelector((state) => state.user.jwt)
+  const user = useSelector((state) => state.user.currentUser);
   
   const [task, setTask] = useState(null)
   const [title, setTitle] = useState('');
@@ -37,36 +38,54 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
   const [completedBy, setCompletedBy] = useState(null)
   const [isAssignedTo, setIsAssignedTo] = useState(null)
   const [previous, setPrevious] = useState(null)
-  
+
+  const [startDate, setStartDate] = useState(null)
+  const [startTime, setStartTime] = useState(null)
+  const [endDate, setEndDate] = useState(null)
+  const [endTime, setEndTime] = useState(null)
+
+  const [priority, setPriority] = useState(null)
+  const [difficulty, setDifficulty] = useState(null)
+
+  const [isProgressModified, setIsProgressModified] = useState(false)
+
   useEffect(() => {
     const config = {
       headers: { 'auth-token': token }
     };
     const path = apiUrl+'/tasks/' + _id
-    console.log(_id)
     axios.get(path, config)
       .then(response => {
+        console.log(response.data)
         setTask(response.data)
+        setPriority(response.data[0].priority)
+        setDifficulty(response.data[0].difficulty)
         setProgress(response.data[0].progress)
-        const completedByUser = response.data[0].completed_by
-        let userDetailsPath = apiUrl + '/users/getDetails/' + completedByUser
+        if (response.data[0].start_date) {
+          setStartDate(response.data[0].start_date.substr(0, 10));
+          setStartTime(response.data[0].start_date.slice(11, 16));
+        }
+        
+        if (response.data[0].end_date) {
+          setEndDate(response.data[0].end_date.substr(0, 10));
+          setEndTime(response.data[0].end_date.slice(11, 16));
+        }
 
-        axios.get(userDetailsPath, config)
+        if(response.data[0].completed_by){
+        axios.get(apiUrl + '/users/getDetails/' + response.data[0].completed_by, config)
         .then(userResponse => {
           setCompletedBy(userResponse.data)
         })
         .catch(userError => {
           console.error(userError);
-        });
-        const assignedTo = response.data[0].assigned_to;
-        const assignedToPath = apiUrl + '/users/getDetails/' + assignedTo
-
-        axios.get(assignedToPath, config)
+        });}
+        if(response.data[0].assigned_to){ 
+        axios.get(apiUrl + '/users/getDetails/' + response.data[0].assigned_to, config)
         .then(userResponse =>{
           setIsAssignedTo(userResponse.data)
         }).catch(userError =>{
           console.error(userError)
-        })
+        })}
 
         if(response.data[0].previous)
         {
@@ -81,32 +100,57 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
       });
   }, []);
 
-  const handleSaveChanges = () => {
-    console.log(completedBy)
-    if(isModified)
-      {
-        handleTaskUpdate(title);
-      }
-    if(progress === "Done")
-    {
-      handleCheck()
+  const handleSaveChanges = async() => {
+    if (isModified) {
+      handleTaskUpdate(title);
     }
-    else{
-      Uncheck()
+    if (progress === "Done") {
+      handleCheck();
+      Unstuck();
+    } else if (progress === "Stuck" && isProgressModified) {
+      await handleStuck();
+      Uncheck();
+      setIsProgressModified(false)
+    } else {
+      Uncheck();
+      Unstuck();
     }
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = apiUrl+'/tasks/' + _id;
-
-    axios.put(path, task, config)
-      .then(response => {
-      })
+  
+    let startDateTime = null;
+    let endDateTime = null;
+  
+    if (startDate && startTime) {
+      startDateTime = new Date(`${startDate}T${startTime}:00`);
+      startDateTime.setHours(startDateTime.getHours() + 3); // Increment start date by 3 hours
+      startDateTime = startDateTime.toISOString();
+    }
+  
+    if (endDate && endTime) {
+      endDateTime = new Date(`${endDate}T${endTime}:00`);
+      endDateTime.setHours(endDateTime.getHours() + 3); // Increment end date by 3 hours
+      endDateTime = endDateTime.toISOString();
+    }
+  
+    setTask({ ...task, start_date: startDateTime, end_date: endDateTime });
+  
+    const path = apiUrl + '/tasks/' + _id;
+  
+    axios.put(path, { ...task, start_date: startDateTime, end_date: endDateTime }, config)
       .catch(error => {
         console.error(error);
       });
   }
+  const handleAssignTask = () => {
 
+    handleSaveChanges();
+    showAssignTask(priority, difficulty);
+    onHide();
+  };
+
+  
   return (
     <>
     
@@ -125,6 +169,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         <Form.Control
           type="text"
           defaultValue={task[0].title}
+          disabled={user.role === 'employee'}
           onChange={(e) => {
             setTask({ ...task, title: e.target.value })
             setIsModified(true)
@@ -138,9 +183,9 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           as={"textarea"}
           rows={2}
           defaultValue={task[0].description}
+          disabled={user.role === 'employee'}
           onChange={(e) =>{
             setTask({ ...task, description: e.target.value })
-            console.log(task)
           }
           }
         />
@@ -149,8 +194,9 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
       <FormRow style={{marginBottom:"30px"}}>
         <Form.Group style={{ width: "31%" }}>
           <Form.Label>Priority:</Form.Label>
-          <Form.Select aria-label="Priority" defaultValue={task[0].priority} onChange={(e) => {
+          <Form.Select aria-label="Priority" disabled={user.role === 'employee'} defaultValue={task[0].priority} onChange={(e) => {
             setTask({ ...task, priority: e.target.value })
+            setPriority(e.target.value)
           }}>
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
@@ -163,6 +209,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           <Form.Select aria-label="Progress" defaultValue={task[0].progress} disabled={isAssignedTo === null ? true : false} onChange={(e) => {
             setTask({ ...task, progress: e.target.value })
             setProgress(e.target.value)
+            setIsProgressModified(true)
           }
         }>
             <option value="Not Started">Not Started</option>
@@ -173,8 +220,9 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         </Form.Group>
         <Form.Group style={{ width: "31%" }}>
           <Form.Label>Difficulty:</Form.Label>
-          <Form.Select aria-label="Difficulty" defaultValue={task[0].difficulty} onChange={(e) => {
+          <Form.Select aria-label="Difficulty" defaultValue={task[0].difficulty} disabled={user.role === 'employee'} onChange={(e) => {
             setTask({ ...task, difficulty: e.target.value })
+            setDifficulty(e.target.value)
           }}>
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
@@ -189,44 +237,48 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           <Form.Label>Start Date:</Form.Label>
           <Form.Control
             type="date"
-            defaultValue={task.startDate}
-            onChange={(e) =>
-              setTask({ ...task, startDate: e.target.value })
-            }
+            defaultValue={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            disabled={user.role === 'employee'}
           />
         </Form.Group>
         <Form.Group style={{ width: "48%" }}>
           <Form.Label>Start Time</Form.Label>
-          <Form.Control type="time" defaultValue="00:00"/>
+          <Form.Control
+            type="time"
+            defaultValue={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            disabled={user.role === 'employee'}
+          />
         </Form.Group>
-        </FormRow>
-        
-        <FormRow>
-          <Form.Group style={{ width: "48%" }}>
-            <Form.Label>End Date:</Form.Label>
-            <Form.Control
-              type="date"
-              defaultValue={task.endDate}
-              onChange={(e) =>
-                setTask({ ...task, endDate: e.target.value })
-              }
-              />
-          </Form.Group>
-          <Form.Group style={{ width: "48%" }}>
-            <Form.Label>End Time</Form.Label>
-            <Form.Control type="time" defaultValue="00:00"/>
+      </FormRow>
+
+      <FormRow>
+        <Form.Group style={{ width: "48%" }}>
+          <Form.Label>End Date:</Form.Label>
+          <Form.Control
+            type="date"
+            defaultValue={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            disabled={user.role === 'employee'}
+          />
         </Form.Group>
-        </FormRow>
+        <Form.Group style={{ width: "48%" }}>
+          <Form.Label>End Time</Form.Label>
+          <Form.Control
+            type="time"
+            defaultValue={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            disabled={user.role === 'employee'}
+          />
+        </Form.Group>
+      </FormRow>
         
-        <FormRow>
+       {user.role === 'manager' && <FormRow>
           <Button style={{
             width:"31%",
             marginTop:"20px"
-        }} onClick={() => {
-          showAssignTask()
-          handleSaveChanges()
-          onHide()
-        }}>Assign task...</Button>
+        }}  onClick={handleAssignTask}>Assign task...</Button>
 
           <Button style={{
             width:"31%",
@@ -243,8 +295,10 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           showAddAssistants()
           handleSaveChanges()
           onHide()
-        }}>Add assistants...</Button>
-        </FormRow>
+        }}
+        disabled={isAssignedTo === null}
+        >Add assistants...</Button>
+        </FormRow>}
         
         <FormRow>
           <Form.Label>Previous task that must be completed:</Form.Label> 

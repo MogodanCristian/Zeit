@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -10,6 +10,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import EditProjectModal from './EditProjectModal';
 import { useNavigate } from 'react-router-dom';
+import Tooltip from '@mui/material/Tooltip';
 
 function formatDate(dateString) {
   const startDate = new Date(dateString.substr(0, 10)).toLocaleString('en-US', {
@@ -24,6 +25,9 @@ function formatDate(dateString) {
 
 const StyledCard = styled(Card)`
   margin: 20px;
+  width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const StyledDropdownButton = styled(DropdownButton)`
@@ -60,15 +64,31 @@ const StyledDropdownButton = styled(DropdownButton)`
   }
 `;
 
+const Exclamation = styled.span`
+  color: red;
+  font-size: 35px;
+  font-family: "Pacifico";
+`;
+
 const ProjectCard = ({project,index, onDelete}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
   const navigate = useNavigate()
   const user = useSelector((state)=> state.user.currentUser)
-  const [bgColor, setBgColor] = useState(`hsl(${Math.floor(Math.random() * 360)}, ${Math.floor(Math.random() * 70) + 30}%, ${Math.floor(Math.random() * 40) + 10}%)`);
+  const [bgColor, setBgColor] = useState(() => {
+    const hue = Math.floor(Math.random() * 360);
+    const saturation = Math.floor(Math.random() * 70) + 30;
+    const lightness = Math.floor(Math.random() * 40) + 10;
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  });
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+
+
+  const [hasProblems,setHasProblems] = useState(false)
+
+  const [showDescriptionTooltip, setShowDescriptionTooltip] = useState(false)
 
   const handleCloseEdit = () => setShowEditModal(false);
   const handleShowEdit = () => setShowEditModal(true);
@@ -76,6 +96,23 @@ const ProjectCard = ({project,index, onDelete}) => {
   const handleCloseDelete = () => setShowConfirmDeleteModal(false);
   const handleShowDelete = () => setShowConfirmDeleteModal(true);
 
+  useEffect(() => {
+    const redShades = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180];
+    const newBgColor = bgColor => {
+    const hue = Math.floor(Math.random() * 360);
+    return redShades.includes(hue) ? newBgColor(bgColor) : `hsl(${hue}, ${bgColor.slice(4)})`;
+  };
+
+  setBgColor(newBgColor(bgColor));
+    const config = {
+      headers: { 'auth-token': token }
+    };
+    axios.get('http://localhost:3000/api/projects/'+ project._id +'/checkStuckTask', config)
+    .then(response =>{
+      setHasProblems(response.data.hasStuckTask)
+    })
+  }, [])
+  
   const handleDelete = () => {
     const config = {
       headers: { 'auth-token': token }
@@ -89,24 +126,31 @@ const ProjectCard = ({project,index, onDelete}) => {
     });
   };
 
+
   return (
     <StyledCard 
       text={'white'}
       style={{ width: '18rem', backgroundColor: bgColor }}
       className="mb-2"
     >
-      <StyledCard.Header style={{flexDirection: "row", display:'flex', justifyContent:'space-between'}}>
-        {index+1}. 
+      <StyledCard.Header style={{flexDirection: "row", display:'flex', justifyContent:'space-between '}}>
+        {index+1}.
        {user.role === 'manager' && <StyledDropdownButton id="dropdown-basic-button" title={'Options'}>
           <Dropdown.Item onClick={handleShowEdit}>Edit...</Dropdown.Item>
           <Dropdown.Item onClick={handleShowDelete}>Delete</Dropdown.Item>
         </StyledDropdownButton>}
       </StyledCard.Header>
-      <StyledCard.Body onClick={()=>{navigate('/projects/'+project._id + '/'+ project.title + '/buckets')}}>
-        <StyledCard.Title>{project.title} </StyledCard.Title>
-        <StyledCard.Text>
-          {project.description}
-        </StyledCard.Text>
+      <StyledCard.Body onClick={() => {navigate('/projects/' + project._id + '/' + project.title + '/buckets')}}>
+        <StyledCard.Title>{hasProblems && <Exclamation>!</Exclamation>} {project.title}</StyledCard.Title>
+        {project.description.length > 20 ? (
+            <Tooltip title={<span style={{fontSize:"15px"}}>{project.description}</span>} arrow>
+              <StyledCard.Text>
+                {project.description.slice(0, 20) + '...'}
+              </StyledCard.Text>
+            </Tooltip>)
+         : (
+          <StyledCard.Text>{project.description}</StyledCard.Text>
+        )}
         <StyledCard.Text>
           Start Date: {formatDate(project.start_date)}
         </StyledCard.Text>
@@ -129,6 +173,7 @@ const ProjectCard = ({project,index, onDelete}) => {
           </Button>
         </Modal.Footer>
       </Modal>
+      
       <EditProjectModal 
         show={showEditModal} 
         onHide={handleCloseEdit} 

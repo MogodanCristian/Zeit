@@ -3,7 +3,7 @@ import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import * as IoIcons from 'react-icons/io';
 import { Link } from 'react-router-dom';
-import { SidebarData, SidebarDataAdmin} from './SidebarData';
+import { SidebarData, SidebarDataAdmin } from './SidebarData';
 import { IconContext } from 'react-icons';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,7 +23,6 @@ const NavLink = styled(Link)`
   background: none;
 `;
 
-
 const NavMenu = styled.nav`
   background-color: #060b26;
   width: 250px;
@@ -34,11 +33,11 @@ const NavMenu = styled.nav`
   top: 0;
   left: -100%;
   transition: 850ms;
-  z-index:-1;
+  z-index: -1;
   &.active {
     left: 0;
     transition: 350ms;
-    z-index:100;
+    z-index: 100;
   }
 `;
 
@@ -59,7 +58,6 @@ const NavText = styled.li`
     align-items: center;
     padding: 0 16px;
     border-radius: 4px;
-
     &:hover {
       background-color: #1a83ff;
     }
@@ -74,7 +72,7 @@ const Logout = styled.li`
   list-style: none;
   height: 60px;
   position: absolute;
-  bottom: 20px; 
+  bottom: 20px;
   left: 0;
   right: 0;
   a {
@@ -87,7 +85,6 @@ const Logout = styled.li`
     align-items: center;
     padding: 0 16px;
     border-radius: 4px;
-
     &:hover {
       background-color: #1a83ff;
     }
@@ -108,22 +105,22 @@ const Span = styled.span`
 `;
 
 const NavMenuItems = styled.ul`
-    width: 100%;
-    padding:0;
-    margin:0;
-`
+  width: 100%;
+  padding: 0;
+  margin: 0;
+`;
 
 function Sidebar() {
   const [sidebar, setSidebar] = useState(false);
 
   const showSidebar = () => setSidebar(!sidebar);
   const dispatch = useDispatch();
-  const user = useSelector((state)=> state.user.currentUser)
-  const handleLogout = () =>{
-    if(user){
-        dispatch(logout())
+  const user = useSelector((state) => state.user.currentUser);
+  const handleLogout = () => {
+    if (user) {
+      dispatch(logout());
     }
-}
+  };
   const sidebarData = user.role === 'admin' ? SidebarDataAdmin : SidebarData;
 
   return (
@@ -142,6 +139,9 @@ function Sidebar() {
               </NavLink>
             </NavbarToggle>
             {sidebarData.map((item, index) => {
+              if (item.title === 'Messages' && user.role === 'employee') {
+                return null; 
+              }
               return (
                 <NavText key={index}>
                   <Link to={item.path}>
@@ -153,7 +153,7 @@ function Sidebar() {
             })}
             <Logout>
               <Link to={'/login'} onClick={handleLogout}>
-                <IoIcons.IoIosLogOut/>
+                <IoIcons.IoIosLogOut />
                 <Span>Logout</Span>
               </Link>
             </Logout>

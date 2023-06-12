@@ -6,6 +6,7 @@ import axios from 'axios';
 import { loginFailure, loginStart, loginSuccess, keepLogged } from '../redux/userReducer'; 
 import jwt from 'jwt-decode'
 import Spinner from 'react-bootstrap/Spinner';
+import { successDataFetching } from '../redux/userReducer';
 
 const OuterContainer = styled.div`
  background-color: #060b26;`
@@ -102,19 +103,30 @@ const Login = () => {
   const handleClick = (e) => {
     e.preventDefault();
     dispatch(loginStart())
-    axios.post(apiUrl+'/auth/login', {
+    axios.post('http://localhost:3000/api/auth/login', {
       email: username,
       password: password
     })
     .then((response) => {
       const token = response.data;
       const user = jwt(token)
-      console.log(user)
-      if(keepLoggedToggle) {
-        dispatch(keepLogged({user: user, jwt: token}))
+      if(!user.account_active){
+        dispatch(loginFailure())
+        setLoginFail(true)
+        return;
       }
-      dispatch(loginSuccess({user: user, jwt: token}))
-      navigate("/")
+      if(user.first_login){
+        dispatch(successDataFetching())
+        navigate('/changePassword/'+user._id)
+      }
+      else{
+        if(keepLoggedToggle) {
+          dispatch(keepLogged({user: user, jwt: token}))
+        }
+        dispatch(loginSuccess({user: user, jwt: token}))
+        navigate("/")
+      }
+      
     })
     .catch((error) => {
       dispatch(loginFailure())
@@ -145,7 +157,7 @@ const Login = () => {
               <Checkbox onChange={handlePersistance} checked={keepLoggedToggle}/>
               <span>Keep me logged in</span>
             </CheckboxContainer>
-            <ForgotPassword>Forgot password? Click <Link to={'/forgot_password'}>here</Link>!
+            <ForgotPassword>Forgot password? Click <Link to={'/forgotPassword'}>here</Link>!
             </ForgotPassword>
             {isFetching && <Spinner/>}
             {loginFail && <Error>Email or password are incorrect.Try again.</Error>}

@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import Bucket from '../components/Bucket';
 import BucketNavbar from '../components/BucketNavbar';
+import AssignTasksAutomaticallyModal from '../components/AssignTasksAutomaticallyModal';
 
 
 const PageContainer = styled.div`
@@ -14,8 +15,17 @@ const PageContainer = styled.div`
   flex-direction: column;
 `
 
+const NoBucketsMessage = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 24px;
+  font-weight: bold;
+`;
+
 const BucketContainer = styled.div`
-  margin-top: 30px;
+  margin-top: ${props => props.role === 'employee' ? '70px' : '30px'};
   display: block;
   height: 69vh;
   white-space: nowrap;
@@ -70,6 +80,8 @@ const Buckets = () => {
   const token = useSelector((state) => state.user.jwt)
   const [buckets, setBuckets] = useState([]);
   const [showCreateBucketModal, setShowCreateBucketModal]=useState(false)
+  const [showAssignAutomatically, setShowAssignAutomatically] = useState(false)
+  const [isTaskCreated, setIsTaskCreated] = useState(false)
   
   const handleCloseCreateBucket = () => setShowCreateBucketModal(false);
   const handleShowCreateBucket = () => setShowCreateBucketModal(true);
@@ -87,31 +99,48 @@ const Buckets = () => {
       headers: { 'auth-token': token }
     };
     const path = apiUrl+'/buckets/getBuckets/'+ projectID
-    axios.get(path, config)
+    if(user.role === 'employee'){
+      axios.get('http://localhost:3000/api/buckets/getEmployeeBuckets/'+projectID+'/'+user._id)
+      .then(response =>{
+        setBuckets(response.data)
+      })
+    }
+    else{
+      axios.get(path, config)
       .then(response => {
         setBuckets(response.data);
       })
       .catch(error => {
         console.error(error);
       });
+    }
+    
   }, [projectID]);
 
   return (
     <>
     <PageContainer>
-      <BucketNavbar title={projectTitle}/>
+      <BucketNavbar title={projectTitle} _id={projectID}/>
       {user.role === 'manager' && <ButtonContainer>
         <StyledButton onClick={handleShowCreateBucket}>Create Bucket</StyledButton>
+        <StyledButton onClick={()=>setShowAssignAutomatically(true)}>Assign tasks automatically...</StyledButton>
       </ButtonContainer>}
-      <BucketContainer>
-        {buckets.map((item,index) =>(
-          <Bucket
-          title={item.title}
-          _id={item._id}
-          key={index}
-          onDelete = {handleBucketDeletion}
-          />
-        ))}
+      <BucketContainer role={user.role}>
+      {buckets.length === 0 ? (
+            <NoBucketsMessage>No buckets to display!</NoBucketsMessage  >
+          ) : (
+            buckets.map((item, index) => (
+              <Bucket
+                title={item.title}
+                _id={item._id}
+                key={index}
+                onDelete={handleBucketDeletion}
+                projectTitle={projectTitle}
+                modifyIsTaskCreated={() => setIsTaskCreated(!isTaskCreated)}
+                projectID={projectID}
+              />
+            ))
+          )}
       </BucketContainer>
     </PageContainer>
     <CreateBucketModal 
@@ -119,8 +148,15 @@ const Buckets = () => {
       onHide={handleCloseCreateBucket} 
       projectID={projectID} 
       onBucketCreated={handleBucketCreated}/>
-    
+
+    <AssignTasksAutomaticallyModal
+      showModal={showAssignAutomatically}
+      onHide={() =>setShowAssignAutomatically(false)}
+      projectID={projectID}
+      isTaskCreated={isTaskCreated}
+    />
     </>
+    
   );
 }
 

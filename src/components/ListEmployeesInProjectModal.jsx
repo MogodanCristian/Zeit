@@ -53,7 +53,6 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
 
   const handleRemoveClick = (index, employee_id) => {
     setClickedIndexes([...clickedIndexes, index]);
-    console.log(employee_id)
     const config = {
         headers: { 'auth-token': token }
       };
@@ -61,10 +60,10 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
      axios.patch(path,{
         employee_id: employee_id
       }, config).then(() => {
-        console.log(response)
       }).catch((error) => {
         console.log(error);
       });
+      axios.put('http://localhost:3000/api/tasks/setToUnassigned/' +projectID +'/'+employee_id)
 
   }
 
@@ -80,19 +79,24 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
         <Modal.Title>List of Employees</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {employees.map((employee, index) => (
-          <EmployeeBox key={index}>
-            <div>{employee.first_name} {employee.last_name}</div>
-            {clickedIndexes.includes(index) ? (
-              <span style={{color:'red'}}>Removed</span>
-            ) : (
-              employee._id === project.manager_id ? <span>Manager</span> :
-              (user.role === 'manager' && (
-                <Button variant="primary" size="sm" onClick={() => handleRemoveClick(index, employee._id)}>Remove</Button>
-              ))
-            )}
-          </EmployeeBox>
-        ))}
+        <p>Note that removing an employee will also make their assigned tasks unassigned.</p>
+        {employees ? (
+          employees.map((employee, index) => (
+            <EmployeeBox key={index}>
+              <div>{employee.first_name} {employee.last_name}</div>
+              {clickedIndexes.includes(index) ? (
+                <span style={{color:'red'}}>Removed</span>
+              ) : (
+                employee._id === project.manager_id ? <span>Manager</span> :
+                (user.role === 'manager' && (
+                  <Button variant="primary" size="sm" onClick={() => handleRemoveClick(index, employee._id)}>Remove</Button>
+                ))
+              )}
+            </EmployeeBox>
+          ))
+        ) : (
+          <div>No employees found.</div>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() =>{

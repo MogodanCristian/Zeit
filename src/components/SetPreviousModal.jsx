@@ -40,6 +40,14 @@ const SetPreviousModal = ({ show, onHide, _id}) => {
         previous: assigned._id
       }, config)
     }
+    else{
+      const config = {
+        headers: { 'auth-token': token }
+      };
+      axios.put(apiUrl+ '/tasks/' +_id,{
+        previous: null
+      }, config)
+    }
 }
   return (
     <Modal show={show} onHide={onHide}>
@@ -52,6 +60,9 @@ const SetPreviousModal = ({ show, onHide, _id}) => {
           <TaskBox key={task._id} task={task} isAssigned={assigned && assigned._id === task._id} assignTask={assignTask}/>
         )))
       : <span>No tasks yet!</span>}
+      {tasks.length !== 0 && <Button onClick={() => {
+        setAssigned(null)
+      }}>Set no task as previous...</Button>}
     </Modal.Body>
 
       <Modal.Footer>
