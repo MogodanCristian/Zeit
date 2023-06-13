@@ -12,6 +12,7 @@ import AssignTaskModal from './AssignTaskModal';
 import SetPreviousModal from './SetPreviousModal';
 import AddAssistatsModal from './AddAssistantsModal';
 import MoveTaskModal from './MoveTaskModal';
+import Tooltip from '@mui/material/Tooltip';
 
 const Container = styled.div`
   display: flex;
@@ -29,9 +30,9 @@ const Container = styled.div`
 
 const Title = styled.span`
   margin-right: 10px;
+  text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
   max-width: calc(100% - 120px);
 `;
 
@@ -183,10 +184,13 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
         checked={isChecked}
       />
       <div>
-        <Title style={{textDecoration: isChecked? 'line-through' : 'none'}} onClick={showDetailsPage}>
-          {titleState}
-        </Title>
         {isStuck &&<Exclamation>!</Exclamation>}
+        <Tooltip title={titleState.length > 20 ? titleState : ''}>
+          <Title style={{textDecoration: isChecked? 'line-through' : 'none'}} onClick={showDetailsPage}>
+            {titleState.length > 20 ? titleState.substring(0,20) + '...' : titleState}
+          </Title>
+        </Tooltip>
+        
       </div>
       
       <Dropdown drop="left">

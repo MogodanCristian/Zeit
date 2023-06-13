@@ -11,7 +11,7 @@ const TaskBoxTitle = styled(Card.Title)`
 `;
 
 const TaskBoxDescription = styled(Card.Text)`
-  white-space: nowrap;
+  white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
 `;

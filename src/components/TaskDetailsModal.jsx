@@ -24,6 +24,10 @@ const EmployeeBox = styled.div`
   margin-bottom: 10px;
 `
 
+const ErrorMessage = styled.span`
+  color:red;
+`
+
 const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Uncheck, showAssignTask, showSetPrevious, showAddAssistants, handleStuck, Unstuck}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
@@ -33,7 +37,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
   
   const [task, setTask] = useState(null)
   const [title, setTitle] = useState('');
-  const [progress, setProgress] = useState('Not Started');
+  const [progress, setProgress] = useState(null);
   const [isModified, setIsModified] = useState(false)
   const [completedBy, setCompletedBy] = useState(null)
   const [isAssignedTo, setIsAssignedTo] = useState(null)
@@ -46,6 +50,8 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
 
   const [priority, setPriority] = useState(null)
   const [difficulty, setDifficulty] = useState(null)
+
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const [isProgressModified, setIsProgressModified] = useState(false)
 
@@ -60,7 +66,22 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         setTask(response.data)
         setPriority(response.data[0].priority)
         setDifficulty(response.data[0].difficulty)
-        setProgress(response.data[0].progress)
+        if(response.data[0].start_date){
+
+          const startDate = response.data[0].start_date;
+          const startDateTime = new Date(startDate);
+          const currentDateTime = new Date();
+
+          startDateTime.setHours(startDateTime.getHours() - 3);
+          if (startDateTime < currentDateTime) {
+            setProgress('In Progress');
+          } else {
+            setProgress(response.data[0].progress);
+          }
+        }
+        else{
+          setProgress('Not Started')
+        }
         if (response.data[0].start_date) {
           setStartDate(response.data[0].start_date.substr(0, 10));
           setStartTime(response.data[0].start_date.slice(11, 16));
@@ -69,6 +90,15 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         if (response.data[0].end_date) {
           setEndDate(response.data[0].end_date.substr(0, 10));
           setEndTime(response.data[0].end_date.slice(11, 16));
+
+          const endDate = response.data[0].end_date;
+          const endDateTime = new Date(endDate);
+          const currentDateTime = new Date();
+
+          endDateTime.setHours(endDateTime.getHours() - 3);
+          if (endDateTime < currentDateTime) {
+            setErrorMessage("The project is past the deadline!!!")
+          }
         }
 
         if(response.data[0].completed_by){
@@ -99,6 +129,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         console.error(error);
       });
   }, []);
+  
 
   const handleSaveChanges = async() => {
     if (isModified) {
@@ -124,13 +155,13 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
   
     if (startDate && startTime) {
       startDateTime = new Date(`${startDate}T${startTime}:00`);
-      startDateTime.setHours(startDateTime.getHours() + 3); // Increment start date by 3 hours
+      startDateTime.setHours(startDateTime.getHours() + 3); 
       startDateTime = startDateTime.toISOString();
     }
   
     if (endDate && endTime) {
       endDateTime = new Date(`${endDate}T${endTime}:00`);
-      endDateTime.setHours(endDateTime.getHours() + 3); // Increment end date by 3 hours
+      endDateTime.setHours(endDateTime.getHours() + 3); 
       endDateTime = endDateTime.toISOString();
     }
   
@@ -156,6 +187,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
     
     <Modal show={show} onHide={()=>{
       handleSaveChanges()
+      setErrorMessage()
       onHide()
     }}>
       <Modal.Header closeButton>
@@ -206,7 +238,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         </Form.Group>
         <Form.Group style={{ width: "31%" }}>
           <Form.Label>Progress:</Form.Label>
-          <Form.Select aria-label="Progress" defaultValue={task[0].progress} disabled={isAssignedTo === null ? true : false} onChange={(e) => {
+          <Form.Select aria-label="Progress" defaultValue={progress} disabled={isAssignedTo === null} onChange={(e) => {
             setTask({ ...task, progress: e.target.value })
             setProgress(e.target.value)
             setIsProgressModified(true)
@@ -332,6 +364,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           :
           <div>No one yet...</div>}
         </EmployeeBox>
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
     </Form>
   ) : (
     <p>Loading...</p>
@@ -341,6 +374,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
       <Modal.Footer>
         <Button variant="secondary" onClick={()=>{
           handleSaveChanges()
+          setErrorMessage("")
           onHide()
         }}>Close</Button>
       </Modal.Footer>

@@ -174,9 +174,9 @@ const AssignTaskModal = ({ show, onHide, _id, priority, difficulty }) => {
   if (performanceLevel === 'Low Performance') {
     spanStyle.color = '#79C999';
   } else if (performanceLevel === 'Medium Performance') {
-    spanStyle.color = 'yellow';
+    spanStyle.color = '#FFD700';
   } else if (performanceLevel === 'High Performance') {
-    spanStyle.color = 'red';
+    spanStyle.color = '#FF0000';
   }
 
   return (
