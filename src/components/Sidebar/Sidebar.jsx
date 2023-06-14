@@ -139,9 +139,6 @@ function Sidebar() {
               </NavLink>
             </NavbarToggle>
             {sidebarData.map((item, index) => {
-              if (item.title === 'Messages' && user.role === 'employee') {
-                return null; 
-              }
               return (
                 <NavText key={index}>
                   <Link to={item.path}>

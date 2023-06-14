@@ -25,11 +25,12 @@ const FormRow = styled.div`
   margin-bottom: 10px;
 `;
 
-const AssignTaskModal = ({ show, onHide, _id, priority, difficulty }) => {
+const AssignTaskModal = ({ show, onHide, _id, priority, difficulty, taskTitle, projectTitle}) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
 
   const token = useSelector((state) => state.user.jwt);
+  const user = useSelector((state) => state.user.currentUser);
 
   const [employees, setEmployees] = useState([]);
   const [assignedEmployeeId, setAssignedEmployeeId] = useState(null);
@@ -164,7 +165,16 @@ const AssignTaskModal = ({ show, onHide, _id, priority, difficulty }) => {
           console.error(error);
         });
     }
-    console.log(employeePerformance)
+    const subject = 'You have been assigned a task!';
+    const body =
+      'You have been assigned the task "' + taskTitle +'", from the project "'+ projectTitle + '". Go check it out!' 
+      axios.post(apiUrl + '/messages', {
+        subject: subject,
+        body: body,
+        user: selectedEmployee._id
+      }, config).then(response =>{
+        console.log(response.data)
+      })
     onHide();
   };
 

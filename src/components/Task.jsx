@@ -134,13 +134,13 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
       user.first_name +
       ' ' +
       user.last_name +
-      ' is currently having problems with the task ' +
+      ' is currently having problems with the task "' +
       title +
-      ', from the bucket of tasks called ' +
+      '", from the bucket of tasks called "' +
       bucketTitle +
-      ' and the project ' +
+      '" and the project "' +
       projectTitle +
-      '. Go investigate and take some measures regarding the issue.';
+      '". Go investigate and take some measures regarding the issue.';
   
     try {
       const response = await axios.get(apiUrl + '/projects/' + projectTitle + '/getManager', config);
@@ -228,6 +228,8 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
         _id={_id}
         priority={priority}
         difficulty={difficulty}
+        taskTitle={title}
+        projectTitle={projectTitle}
       />}
       {showSetPrevious && <SetPreviousModal
           show={showSetPrevious}
@@ -245,6 +247,8 @@ const Task = ({ title, _id, progress, removeFromBucket, bucketTitle, projectTitl
             showDetailsPage()
           }}
           taskID={_id}
+          taskTitle={title}
+          projectTitle={projectTitle}
           
         />
       }

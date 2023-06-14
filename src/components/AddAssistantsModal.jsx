@@ -14,7 +14,7 @@ const EmployeeBox = styled.div`
   margin-bottom: 15px;
 `;
 
-const AddAssistantsModal = ({ show, onHide, taskID }) => {
+const AddAssistantsModal = ({ show, onHide, taskID, taskTitle, projectTitle }) => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
@@ -79,6 +79,18 @@ const AddAssistantsModal = ({ show, onHide, taskID }) => {
         console.log(response)
         if(response.status === 200)
         {
+          for(let i in addedEmployees){
+            const subject = 'You have been assigned as an assistant in a task!';
+            const body =
+              'You have been assigned as an assistant in the task "' + taskTitle +'", from the project "'+ projectTitle + '". Go check it out!' 
+              axios.post(apiUrl + '/messages', {
+                subject: subject,
+                body: body,
+                user: addedEmployees[i]
+              }, config).then(response =>{
+              })
+
+          }
           onHide()
         }
       })

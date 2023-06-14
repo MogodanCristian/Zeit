@@ -80,7 +80,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
           }
         }
         else{
-          setProgress('Not Started')
+          setProgress(response.data[0].progress)
         }
         if (response.data[0].start_date) {
           setStartDate(response.data[0].start_date.substr(0, 10));
