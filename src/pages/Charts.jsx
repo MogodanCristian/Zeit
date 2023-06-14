@@ -4,6 +4,7 @@ import BucketNavbar from '../components/BucketNavbar';
 import axios from 'axios';
 import ProgressPieChart from '../components/Charts/ProgressPieChart';
 import TasksPerEmployeeChart from '../components/Charts/TasksPerEmployeeChart';
+import TasksGraph from '../components/Charts/TasksGraph';
 
 function getProjectID() {
   const url = window.location.href;
@@ -31,6 +32,7 @@ const Charts = () => {
 
   const [employeeData, setEmployeeData] = useState(null);
   const [progressCounts, setProgressCounts] = useState(null);
+  const [tasks, setTasks] = useState(null)
 
   useEffect(() => {
     const config = {
@@ -51,18 +53,30 @@ const Charts = () => {
       .catch(error => {
         console.error(error);
       });
+    axios.get('http://localhost:3000/api/projects/' + projectID + '/getProjectTasks', config)
+      .then(response =>{
+        setTasks(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }, []);
 
   return (
     <>
       <BucketNavbar title={projectTitle} _id={projectID} />
-      <div style={{ display: 'flex' ,marginTop:'30px'}}>
-        <div style={{ flex: 1 }}>
-          {progressCounts && <ProgressPieChart progressCounts={progressCounts} />}
+      <div style={{display: 'flex', flexDirection:'column'}}>
+        <div style={{ display: 'flex' ,marginTop:'30px'}}>
+          <div style={{ flex: 1 }}>
+            {progressCounts && <ProgressPieChart progressCounts={progressCounts} />}
+          </div>
+          <div style={{ flex: 1 }}>
+            {employeeData && <TasksPerEmployeeChart employeeData={employeeData} />}
+          </div>
         </div>
-        <div style={{ flex: 1 }}>
-          {employeeData && <TasksPerEmployeeChart employeeData={employeeData} />}
-        </div>
+        <div style={{flex: 1, marginTop:'50px'}}>
+            {tasks && <TasksGraph tasksData={tasks}/>}
+          </div>
       </div>
     </>
   );

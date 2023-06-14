@@ -77,12 +77,15 @@ const TasksPerEmployeeChart = ({employeeData}) => {
 
 
   return (
-    <GraphContainer>
-      <div style={{alignItems:'center', justifyContent:'center',textAlign:'center'}}>
-          <Bar data={chartData} options={options} />
-          <span style={{fontSize:"30px"}}>Number of tasks that haven't been completed yet</span>
-      </div>
-    </GraphContainer>
+    <>
+      <GraphContainer>
+        <div style={{alignItems:'center', justifyContent:'center',textAlign:'center'}}>
+            <Bar data={chartData} options={options} />
+        </div>
+      </GraphContainer>
+      <span style={{fontSize:"30px"}}>Number of tasks that haven't been completed yet</span>
+    </>
+    
     
   )
 }
