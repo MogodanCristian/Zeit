@@ -57,7 +57,7 @@ const EditUserModal = ({
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/api/users/', config)
+      .get(apiUrl+'/users/', config)
       .then((response) => {
         const activeEmployees = response.data.filter(
             (employee) => employee.account_active
@@ -72,7 +72,7 @@ const EditUserModal = ({
   const handleSubmit = () => {
     if (employeeID) {
       axios
-        .put('http://localhost:3000/api/users/' + employeeID, {
+        .put(apiUrl+'/users/' + employeeID, {
           first_name: firstName,
           last_name: lastName,
           email: email,
@@ -109,7 +109,7 @@ const EditUserModal = ({
       headers: { 'auth-token': token },
     };
     axios
-      .get('http://localhost:3000/api/users/getDetails/' + employee._id, config)
+      .get(apiUrl+'/users/getDetails/' + employee._id, config)
       .then((response) => {
         setFirstName(response.data.first_name);
         setLastName(response.data.last_name);

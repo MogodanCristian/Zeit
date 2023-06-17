@@ -86,7 +86,7 @@ const AssignTaskModal = ({ show, onHide, _id, priority, difficulty, taskTitle, p
             setAssignedEmployeeId(detailsRes.data[0]?.assigned_to);
 
             axios
-              .post('http://localhost:3000/api/tasks/getRecommendedEmployee/' + _id, {
+              .post(apiUrl + '/tasks/getRecommendedEmployee/' + _id, {
                 priority: detailsRes.data[0].priority,
                 difficulty: detailsRes.data[0].difficulty,
               })
@@ -106,7 +106,7 @@ const AssignTaskModal = ({ show, onHide, _id, priority, difficulty, taskTitle, p
 
             const promises = availableRes.data.map(async (employee) => {
               const response = await axios.get(
-                'http://localhost:3000/api/users/performance/' + employee._id
+                apiUrl+ '/users/performance/' + employee._id
               );
               return {
                 _id: employee._id,
@@ -164,17 +164,18 @@ const AssignTaskModal = ({ show, onHide, _id, priority, difficulty, taskTitle, p
         .catch((error) => {
           console.error(error);
         });
+        const subject = 'You have been assigned a task!';
+        const body =
+          'You have been assigned the task "' + taskTitle +'", from the project "'+ projectTitle + '". Go check it out!' 
+          axios.post(apiUrl + '/messages', {
+            subject: subject,
+            body: body,
+            user: selectedEmployee._id
+          }, config).then(response =>{
+            console.log(response.data)
+          })
     }
-    const subject = 'You have been assigned a task!';
-    const body =
-      'You have been assigned the task "' + taskTitle +'", from the project "'+ projectTitle + '". Go check it out!' 
-      axios.post(apiUrl + '/messages', {
-        subject: subject,
-        body: body,
-        user: selectedEmployee._id
-      }, config).then(response =>{
-        console.log(response.data)
-      })
+    
     onHide();
   };
 

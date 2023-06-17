@@ -36,7 +36,7 @@ const ShowAllUsersModal = ({ show, onHide , namesChanged}) => {
 
   useEffect(() => {
     axios
-      .get( 'http://localhost:3000/api/users/', config)
+      .get( apiUrl+'/users/', config)
       .then((response) => {
         setEmployees(response.data);
         console.log(response.data)

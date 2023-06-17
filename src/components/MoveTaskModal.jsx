@@ -18,13 +18,13 @@ const MoveTaskModal = ({ show, onHide, taskID, modifyIsTaskMoved,isTaskMoved}) =
   };
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/tasks/getProject/' + taskID, config).then((response) => {
+    axios.get(apiUrl + '/tasks/getProject/' + taskID, config).then((response) => {
       setCurrentProject(response.data);
     });
-    axios.get('http://localhost:3000/api/projects', config).then((response) => {
+    axios.get(apiUrl+ '/projects', config).then((response) => {
       setProjects(response.data);
     });
-    axios.get('http://localhost:3000/api/buckets', config).then((response) => {
+    axios.get(apiUrl + '/buckets', config).then((response) => {
       setBuckets(response.data);
     });
   }, []);
@@ -42,12 +42,13 @@ const MoveTaskModal = ({ show, onHide, taskID, modifyIsTaskMoved,isTaskMoved}) =
 
   const handleTaskMove = () => {
     if (selectedBucket) {
-      axios.post('http://localhost:3000/api/tasks/moveTask/' + selectedBucket._id + '/'+ taskID)
+      axios.post(apiUrl + '/tasks/moveTask/' + selectedBucket._id + '/'+ taskID)
       .then(response =>{
         if(response.status === 200)
         {
           setMessage("Task moved successfully!")
           modifyIsTaskMoved()
+          window.location.reload()
         }
       })
     }

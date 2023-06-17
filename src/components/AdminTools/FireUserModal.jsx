@@ -50,7 +50,7 @@ const FireUserModal = ({
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/api/users/', config)
+      .get(apiUrl+'/users/', config)
       .then((response) => {
         const activeEmployees = response.data.filter(
             (employee) => employee.account_active
@@ -65,7 +65,7 @@ const FireUserModal = ({
   const handleDelete = () => {
     if (employeeToDelete) {
       axios
-        .delete('http://localhost:3000/api/users/' + employeeToDelete, config)
+        .delete(apiUrl+ '/users/' + employeeToDelete, config)
         .then((response) => {
             setShowConfirmDelete(false)
             window.location.reload()

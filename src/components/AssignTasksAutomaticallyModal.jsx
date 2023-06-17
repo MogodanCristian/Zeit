@@ -15,7 +15,7 @@ const AssignTasksAutomaticallyModal = ({ showModal, onHide, projectID , isTaskCr
       headers: { 'auth-token': token },
     };
     axios
-      .get('http://localhost:3000/api/projects/' + projectID + '/getUnassignedTasks', config)
+      .get(apiUrl+'/projects/' + projectID + '/getUnassignedTasks', config)
       .then((res) => {
         setTasks(res.data);
       })
@@ -33,7 +33,7 @@ const AssignTasksAutomaticallyModal = ({ showModal, onHide, projectID , isTaskCr
       try {
         for (const task of tasks) {
           const response = await axios.post(
-            'http://localhost:3000/api/tasks/getRecommendedEmployee/' + task._id,
+            apiUrl+'/tasks/getRecommendedEmployee/' + task._id,
             {
               priority: task.priority,
               difficulty: task.difficulty,
@@ -42,7 +42,7 @@ const AssignTasksAutomaticallyModal = ({ showModal, onHide, projectID , isTaskCr
           );
 
           await axios.put(
-            'http://localhost:3000/api/tasks/' + task._id,
+            apiUrl+'/tasks/' + task._id,
             {
               assigned_to: response.data._id,
             },

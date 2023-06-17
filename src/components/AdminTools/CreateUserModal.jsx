@@ -69,7 +69,7 @@ const CreateUserModal = ({ show, onHide }) => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = 'http://localhost:3000/api/users/register'
+    const path = apiUrl+ '/users/register'
     axios.post(path, {
       first_name: firstName,
       last_name: lastName,
@@ -89,7 +89,10 @@ const CreateUserModal = ({ show, onHide }) => {
 }
 
   return (
-    <Modal show={show} onHide={onHide} centered>
+    <Modal show={show} onHide={() =>{
+      onHide()
+      window.location.reload()
+    }} centered>
       <Modal.Header closeButton>
         <Modal.Title>Create New User</Modal.Title>
       </Modal.Header>
@@ -127,7 +130,10 @@ const CreateUserModal = ({ show, onHide }) => {
         {allGood && <span>User creat cu succes!</span>}
       </Modal.Body>
       <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>
+          <Button variant="secondary" onClick={() =>{
+            onHide()
+            window.location.reload()
+          }}>
             Close
           </Button>
           <Button variant="primary" type="submit" onClick={handleSubmit}>

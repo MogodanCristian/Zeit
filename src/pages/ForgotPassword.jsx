@@ -97,7 +97,7 @@ const ForgotPassword = () => {
     if(email){
       let dummyCode = generateCode()
       setCode(dummyCode)
-      axios.post('http://localhost:3000/api/users/sendEmail/forgotPassword',{
+      axios.post(apiUrl+'/users/sendEmail/forgotPassword',{
         recip: email,
         subject: "Password change",
         content: 'Your password change code is ' + dummyCode
@@ -127,7 +127,7 @@ const ForgotPassword = () => {
               if(code === codeField)
               {
                 console.log(email)
-                axios.post('http://localhost:3000/api/users/findByEmail', {
+                axios.post(apiUrl+'/users/findByEmail', {
                   email:email
                 }).then(response =>{
                   if(response.data){

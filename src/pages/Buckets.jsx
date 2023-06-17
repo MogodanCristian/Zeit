@@ -100,7 +100,7 @@ const Buckets = () => {
     };
     const path = apiUrl+'/buckets/getBuckets/'+ projectID
     if(user.role === 'employee'){
-      axios.get('http://localhost:3000/api/buckets/getEmployeeBuckets/'+projectID+'/'+user._id)
+      axios.get(apiUrl+ '/buckets/getEmployeeBuckets/'+projectID+'/'+user._id)
       .then(response =>{
         setBuckets(response.data)
       })

@@ -35,11 +35,11 @@ useEffect(() => {
   };
 
   axios
-    .get('http://localhost:3000/api/messages/' + user._id, config)
+    .get(apiUrl+ '/messages/' + user._id, config)
     .then((response) => {
       setMessages(response.data);
       response.data.forEach((message) => {
-        axios.put(`http://localhost:3000/api/messages/${message._id}`, {
+        axios.put(apiUrl+`/messages/${message._id}`, {
           is_read:true
         }, config)
           .catch((error) => {

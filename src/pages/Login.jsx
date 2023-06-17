@@ -86,6 +86,16 @@ const Error = styled.p`
   font-size: medium;
   color: red;
 `
+function generateCode() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let code = '';
+  for (let i = 0; i < 5; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    code += characters[randomIndex];
+  }
+  return code;
+}
+
 
 const Login = () => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
@@ -103,21 +113,23 @@ const Login = () => {
   const handleClick = (e) => {
     e.preventDefault();
     dispatch(loginStart())
-    axios.post('http://localhost:3000/api/auth/login', {
+    axios.post(apiUrl+ '/auth/login', {
       email: username,
       password: password
     })
     .then((response) => {
+      console.log(response)
       const token = response.data;
       const user = jwt(token)
       if(!user.account_active){
         dispatch(loginFailure())
+        console.log('muies')
         setLoginFail(true)
         return;
       }
       if(user.first_login){
         dispatch(successDataFetching())
-        navigate('/changePassword/'+user._id)
+        navigate('/changePassword/'+user._id+'/'+ generateCode())
       }
       else{
         if(keepLoggedToggle) {

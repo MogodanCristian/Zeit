@@ -38,22 +38,22 @@ const Charts = () => {
     const config = {
       headers: { 'auth-token': token }
     };
-    const path = apiUrl + '/buckets/getBuckets/' + projectID;
-    axios.get('http://localhost:3000/api/tasks/getTasksProgress/' + projectID, config)
+    axios.get(apiUrl+ '/tasks/getTasksProgress/' + projectID, config)
       .then(response => {
         setProgressCounts(response.data.progressCounts);
       })
       .catch(error => {
         console.error(error);
       });
-    axios.get('http://localhost:3000/api/projects/' + projectID + '/tasksData', config)
+    axios.get(apiUrl+ '/projects/' + projectID + '/tasksData', config)
       .then(response => {
+        console.log(response.data)
         setEmployeeData(response.data);
       })
       .catch(error => {
         console.error(error);
       });
-    axios.get('http://localhost:3000/api/projects/' + projectID + '/getProjectTasks', config)
+    axios.get(apiUrl + '/projects/' + projectID + '/getProjectTasks', config)
       .then(response =>{
         setTasks(response.data);
       })

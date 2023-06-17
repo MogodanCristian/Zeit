@@ -97,7 +97,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
 
           endDateTime.setHours(endDateTime.getHours() - 3);
           if (endDateTime < currentDateTime) {
-            setErrorMessage("The project is past the deadline!!!")
+            setErrorMessage("The task is past the deadline!!!")
           }
         }
 

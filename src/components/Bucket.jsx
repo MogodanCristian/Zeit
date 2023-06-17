@@ -161,7 +161,7 @@ const Bucket = ({ title, _id, onDelete, projectTitle, modifyIsTaskCreated , proj
     const path = apiUrl + '/tasks/getTasks/' + _id;
     if(user.role === 'employee')
     {
-      axios.get('http://localhost:3000/api/tasks/getEmployeeTasks/'+_id+'/'+user._id)
+      axios.get(apiUrl+ '/tasks/getEmployeeTasks/'+_id+'/'+user._id)
       .then(response =>{
         setTasks(response.data)
       })

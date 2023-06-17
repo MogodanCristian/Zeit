@@ -21,7 +21,7 @@ const SetPreviousModal = ({ show, onHide, _id}) => {
     const config = {
       headers: { 'auth-token': token }
     };
-    axios.get('http://localhost:3000/api/tasks/getRemainingTasks/' +_id)
+    axios.get(apiUrl + '/tasks/getRemainingTasks/' +_id)
     .then(res => {
       setTasks(res.data)
       console.log(res.data)

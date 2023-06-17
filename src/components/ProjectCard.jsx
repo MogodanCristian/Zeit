@@ -107,7 +107,7 @@ const ProjectCard = ({project,index, onDelete}) => {
     const config = {
       headers: { 'auth-token': token }
     };
-    axios.get('http://localhost:3000/api/projects/'+ project._id +'/checkStuckTask', config)
+    axios.get(apiUrl+'/projects/'+ project._id +'/checkStuckTask', config)
     .then(response =>{
       setHasProblems(response.data.hasStuckTask)
     })

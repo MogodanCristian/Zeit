@@ -63,7 +63,7 @@ const ListEmployeesInProjectModal = ({ show, onHide}) => {
       }).catch((error) => {
         console.log(error);
       });
-      axios.put('http://localhost:3000/api/tasks/setToUnassigned/' +projectID +'/'+employee_id)
+      axios.put(apiUrl+ '/tasks/setToUnassigned/' +projectID +'/'+employee_id)
 
   }
 

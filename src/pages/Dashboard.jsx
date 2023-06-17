@@ -26,13 +26,15 @@ const PerformanceLevel = styled.p`
 `;
 
 const Dashboard = () => {
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
   const user = useSelector((state) => state.user.currentUser);
   const [hasUnread, setHasUnread] = useState(false);
   const [employeePerformanceData, setEmployeePerformanceData] = useState(null);
   const [performanceLevel,setPerformanceLevel] = useState(null)
   useEffect(() => {
     axios
-      .get('http://localhost:3000/api/messages/' + user._id + '/hasUnread')
+      .get(apiUrl+'/messages/' + user._id + '/hasUnread')
       .then((response) => {
         setHasUnread(response.data.hasUnread);
 
@@ -44,12 +46,12 @@ const Dashboard = () => {
         console.error(error);
       });
     axios
-      .get('http://localhost:3000/api/users/getPerformanceDetails/' + user._id)
+      .get(apiUrl+'/users/getPerformanceDetails/' + user._id)
       .then((response) => {
         setEmployeePerformanceData(response.data);
         console.log(response.data)
       });
-      axios.get('http://localhost:3000/api/users/performance/' + user._id).then((response) =>{
+      axios.get(apiUrl+'/users/performance/' + user._id).then((response) =>{
         setPerformanceLevel(response.data)
       })
   }, []);

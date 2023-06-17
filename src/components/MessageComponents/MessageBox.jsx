@@ -47,6 +47,8 @@ const TrashIcon = styled(FontAwesomeIcon)`
 `;
 
 const MessageBox = ({ subject, body, timestamp, handleDelete,_id}) => {
+  const env = JSON.parse(JSON.stringify(import.meta.env));
+  const apiUrl = env.VITE_ZEIT_API_URL;
   const token = useSelector((state) => state.user.jwt);
 
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
@@ -63,7 +65,7 @@ const MessageBox = ({ subject, body, timestamp, handleDelete,_id}) => {
       headers: { 'auth-token': token }
     };
   
-    axios.delete('http://localhost:3000/api/messages/'+_id,config).catch(error =>{
+    axios.delete(apiUrl+ '/messages/'+_id,config).catch(error =>{
       console.error(error);
     })
     handleDelete(_id)

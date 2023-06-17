@@ -44,7 +44,7 @@ const AddEmployeeModal = ({ show, onHide}) => {
       headers: { 'auth-token': token }
     };
     const path = apiUrl+'/users/availableEmployees/'+projectID;
-    axios.get('http://localhost:3000/api/users/availableEmployees/'+projectID, config)
+    axios.get(apiUrl + '/users/availableEmployees/'+projectID, config)
       .then(response => {
         const employeesWithAddedField = response.data.map(employee => ({ ...employee, added: false }));
         setAllEmployees(employeesWithAddedField);

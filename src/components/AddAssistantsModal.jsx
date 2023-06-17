@@ -28,11 +28,11 @@ const AddAssistantsModal = ({ show, onHide, taskID, taskTitle, projectTitle }) =
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/api/tasks/getProject/' + taskID, config)
+      .get(apiUrl + '/tasks/getProject/' + taskID, config)
       .then((response) => {
         axios
-          .get(
-            'http://localhost:3000/api/projects/' +
+          .get(apiUrl + 
+            '/projects/' +
               response.data._id +
               '/availableForAssist/'+taskID,
             config
@@ -41,7 +41,7 @@ const AddAssistantsModal = ({ show, onHide, taskID, taskTitle, projectTitle }) =
             setEmployees(employeeRes.data);
           });
       })
-      axios.get('http://localhost:3000/api/tasks/'+taskID, config)
+      axios.get(apiUrl+'/tasks/'+taskID, config)
       .then(response =>{  
         console.log(response.data[0].assisted_by)
         setAddedEmployees(response.data[0].assisted_by)
@@ -72,7 +72,7 @@ const AddAssistantsModal = ({ show, onHide, taskID, taskTitle, projectTitle }) =
 
   const handleSubmit = () =>{
     console.log(addedEmployees)
-    axios.put('http://localhost:3000/api/tasks/'+taskID,{
+    axios.put(apiUrl+'/tasks/'+taskID,{
       assisted_by: addedEmployees
     },config)
       .then(response =>{

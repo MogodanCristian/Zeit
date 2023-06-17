@@ -71,7 +71,7 @@ const Error = styled.p`
 function getUserIdFromUrl(url) {
   const urlObj = new URL(url);
   const pathSegments = urlObj.pathname.split('/');
-  return pathSegments[pathSegments.length - 1];
+  return pathSegments[pathSegments.length - 2];
 }
 
 const passwordValidation = (password) => {
@@ -118,9 +118,10 @@ const ChangePassword = () => {
   const [passwordMessage, setPasswordMessage] = useState('')
   const [confirmPasswordMessage, setConfirmPasswordMessage] = useState('')
   const [allDone,setAllDone] = useState(false)
+
   useEffect(() => {
     const _id=getUserIdFromUrl(window.location.href);
-    axios.get('http://localhost:3000/api/users/getDetails/'+_id)
+    axios.get(apiUrl+ '/users/getDetails/'+_id)
     .then(response =>{
       setUser(response.data)
     })
@@ -156,15 +157,16 @@ const ChangePassword = () => {
             {
               if(password === confirmPassword){
                 const _id=getUserIdFromUrl(window.location.href);
-                axios.patch('http://localhost:3000/api/users/changePassword/'+_id,{
+                axios.patch(apiUrl+'/users/changePassword/'+_id,{
                   password: password
                 }).then(response =>{
+                  console.log(response)
                  if(response.status === 200)
                  {
                   setAllDone(true)
                   setErrorMessage('')
                  }
-                 axios.put('http://localhost:3000/api/users/' +_id,{
+                 axios.put(apiUrl+'/users/' +_id,{
                   first_login:false
                  })
                 })
