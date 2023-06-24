@@ -14,12 +14,20 @@ import Tooltip from '@mui/material/Tooltip';
 
 function formatDate(dateString) {
   const startDate = new Date(dateString.substr(0, 10)).toLocaleString('en-US', {
-    year: 'numeric', 
-    month: 'long', 
+    year: 'numeric',
+    month: 'long',
     day: 'numeric',
-  })
-  const startTime = dateString.slice(11, 16);
-  return startDate + ", " + startTime
+  });
+
+  const startTime = new Date(dateString.substr(0, 16));
+  startTime.setHours(startTime.getHours() + 3);
+
+  const formattedStartTime = startTime.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  return startDate + ', ' + formattedStartTime;
 }
 
 

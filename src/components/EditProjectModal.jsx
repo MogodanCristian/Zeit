@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
@@ -15,9 +15,17 @@ const EditProjectModal = ({ show, onHide, defaultTitle, defaultDescription, defa
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
   const defaultStartDate = defaultStartDateTime.substr(0, 10); 
-  const defaultStartTime = defaultStartDateTime.slice(11, 16); 
+
+  const newTime = new Date(defaultStartDateTime)
+  const timeString = `${newTime.getHours().toString().padStart(2, '0')}:${newTime.getMinutes().toString().padStart(2, '0')}`;
+  const defaultStartTime = timeString;
+
+
   const defaultEndDate = defaultEndDateTime.substr(0, 10); 
-  const defaultEndTime = defaultEndDateTime.slice(11, 16);
+  const newEndTime = new Date(defaultEndDateTime)
+  const endTimeString = `${newEndTime.getHours().toString().padStart(2, '0')}:${newEndTime.getMinutes().toString().padStart(2, '0')}`;
+
+  const defaultEndTime = endTimeString
   const [title, setTitle] = useState(defaultTitle);
   const [description, setDescription] = useState(defaultDescription);
   const [startDate, setStartDate] = useState(defaultStartDate);
@@ -67,6 +75,7 @@ const EditProjectModal = ({ show, onHide, defaultTitle, defaultDescription, defa
       });
     }
   };
+
   return (
     <>
     <Modal show={show} onHide={() => {
@@ -103,7 +112,7 @@ const EditProjectModal = ({ show, onHide, defaultTitle, defaultDescription, defa
           </Form.Group>
           <Form.Group controlId="formStartTime" className="mt-3">
             <Form.Label>Start Time</Form.Label>
-            <Form.Control type="time" defaultValue={defaultStartTime} onChange={(event) => {
+            <Form.Control type="time" defaultValue={startTime} onChange={(event) => {
                 setStartTime(event.target.value)
                 setIsModified(true)
                 }} />
