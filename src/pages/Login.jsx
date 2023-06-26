@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -96,7 +96,6 @@ function generateCode() {
   return code;
 }
 
-
 const Login = () => {
   const env = JSON.parse(JSON.stringify(import.meta.env));
   const apiUrl = env.VITE_ZEIT_API_URL;
@@ -107,6 +106,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const isFetching = useSelector((state) => state.user.isFetching)
   const [loginFail, setLoginFail] = useState(false)
+  const [haveAdmins, setHaveAdmins] = useState(false)
   const handlePersistance = () =>{
     setKeepLoggedToggle(!keepLoggedToggle)
   }
@@ -123,7 +123,6 @@ const Login = () => {
       const user = jwt(token)
       if(!user.account_active){
         dispatch(loginFailure())
-        console.log('muies')
         setLoginFail(true)
         return;
       }
@@ -146,6 +145,16 @@ const Login = () => {
 
     });
   };
+
+  useEffect(() => {
+
+    axios.get(apiUrl + '/users/getAdmins').then(res =>{
+      if(res.data.length > 0)
+      setHaveAdmins(true)
+    })
+
+  }, [])
+  
 
   return (
     <OuterContainer>
@@ -171,6 +180,8 @@ const Login = () => {
             </CheckboxContainer>
             <ForgotPassword>Forgot password? Click <Link to={'/forgotPassword'}>here</Link>!
             </ForgotPassword>
+            {!haveAdmins && <ForgotPassword>Want to create your first admin? Click <Link to={'/register'}>here</Link>!
+            </ForgotPassword>}
             {isFetching && <Spinner/>}
             {loginFail && <Error>Email or password are incorrect.Try again.</Error>}
           </Form>

@@ -153,7 +153,7 @@ const ProjectCard = ({project,index, onDelete}) => {
         {project.description.length > 20 ? (
             <Tooltip title={<span style={{fontSize:"15px"}}>{project.description}</span>} arrow>
               <StyledCard.Text>
-                {project.description.slice(0, 20) + '...'}
+                {project.description.slice(0, 50) + '...'}
               </StyledCard.Text>
             </Tooltip>)
          : (

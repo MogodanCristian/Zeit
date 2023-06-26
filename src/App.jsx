@@ -21,6 +21,7 @@ import Charts from './pages/Charts'
 import ChangePassword from './pages/ChangePassword'
 import Messages from './pages/Messages'
 import Support from './pages/Support'
+import Register from './pages/Register'
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
@@ -59,6 +60,7 @@ function App() {
           <Route path = '/forgotPassword' element={user? <Navigate to={'/'}/>:<ForgotPassword/>}/>
           <Route path = '/changePassword/:userID/:securityCode' element={user? <Navigate to={'/'}/>:<ChangePassword/>}/>
           <Route path='/unauthorized' element={user ? <Unauthorized /> : <Navigate to={'/login'} />} />
+          <Route path='/register' element={<Register/>}/>
           {user === null ? (
             <Route path='*' element={<Navigate to='/login' replace />} />
           ) : (
