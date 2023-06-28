@@ -66,22 +66,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         setTask(response.data)
         setPriority(response.data[0].priority)
         setDifficulty(response.data[0].difficulty)
-        if(response.data[0].start_date){
-
-          const startDate = response.data[0].start_date;
-          const startDateTime = new Date(startDate);
-          const currentDateTime = new Date();
-
-          startDateTime.setHours(startDateTime.getHours() - 3);
-          if (startDateTime < currentDateTime) {
-            setProgress('In Progress');
-          } else {
-            setProgress(response.data[0].progress);
-          }
-        }
-        else{
-          setProgress(response.data[0].progress)
-        }
+        setProgress(response.data[0].progress);
         if (response.data[0].start_date) {
           setStartDate(response.data[0].start_date.substr(0, 10));
           setStartTime(response.data[0].start_date.slice(11, 16));
@@ -166,7 +151,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
     }
   
     setTask({ ...task, start_date: startDateTime, end_date: endDateTime });
-  
+    console.log(task)
     const path = apiUrl + '/tasks/' + _id;
   
     axios.put(path, { ...task, start_date: startDateTime, end_date: endDateTime }, config)

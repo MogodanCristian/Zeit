@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PerformanceDetailsChart from '../components/Charts/PerformanceDetailsChart';
 import styled from 'styled-components';
+import { Link, useNavigate } from 'react-router-dom';
 
 const PageContainer = styled.div`
   margin-left: 5%;
@@ -32,6 +33,12 @@ const Dashboard = () => {
   const [hasUnread, setHasUnread] = useState(false);
   const [employeePerformanceData, setEmployeePerformanceData] = useState(null);
   const [performanceLevel,setPerformanceLevel] = useState(null)
+
+  const CustomToastWithLink = () => (
+    <div>
+      You have unread messages! Click <Link to="/messages">here</Link> to read them!
+    </div>
+  );
   useEffect(() => {
     axios
       .get(apiUrl+'/messages/' + user._id + '/hasUnread')
@@ -39,7 +46,7 @@ const Dashboard = () => {
         setHasUnread(response.data.hasUnread);
 
         if (response.data.hasUnread) {
-          toast.info('You have unread messages!');
+          toast.info(CustomToastWithLink);
         }
       })
       .catch((error) => {
@@ -78,7 +85,7 @@ const Dashboard = () => {
 
   return (
     <PageContainer>
-      <ToastContainer />
+      <ToastContainer/>
       <Greeting>Hello, {user.first_name} {user.last_name}! Here are your stats at the moment:</Greeting>
       {performanceMessage && <PerformanceLevel>Your performance level is {performanceMessage}.</PerformanceLevel>}
       {employeePerformanceData && <PerformanceDetailsChart employeeData={employeePerformanceData} />}
