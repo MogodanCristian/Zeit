@@ -7,17 +7,25 @@ import { loginFailure, loginStart, loginSuccess, keepLogged } from '../redux/use
 import jwt from 'jwt-decode'
 import Spinner from 'react-bootstrap/Spinner';
 import { successDataFetching } from '../redux/userReducer';
+import Logo from '../components/Logo/Logo';
 
 const OuterContainer = styled.div`
  background-color: #060b26;`
 
 const InnerContainer = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 80vh;
   background-size: cover;
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20vh;
 `;
 
 const Wrapper = styled.div`
@@ -158,6 +166,9 @@ const Login = () => {
 
   return (
     <OuterContainer>
+      <LogoContainer>
+            <Logo/>
+        </LogoContainer>
       <InnerContainer>
         <Wrapper>
           <Title>SIGN IN</Title>

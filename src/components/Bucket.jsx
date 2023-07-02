@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled ,{keyframes}from 'styled-components';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Modal from 'react-bootstrap/Modal';
 import { Button } from 'react-bootstrap';
@@ -10,7 +10,17 @@ import ThreeDotsToggle from './ThreeDotsToggle';
 import CreateTaskForm from './CreateTaskForm';
 import Tooltip from '@mui/material/Tooltip';
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
 const Container = styled.div`
+  animation: ${fadeIn} 0.5s ease-in;
   display: inline-block;
   width: 300px;
   height: 65vh;

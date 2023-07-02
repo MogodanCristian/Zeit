@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Dropdown, Modal } from 'react-bootstrap';
-import styled from 'styled-components';
+import styled ,{keyframes} from 'styled-components';
 import ThreeDotsToggle from './ThreeDotsToggle';
 import MuiCheckbox from '@mui/material/Checkbox';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -14,7 +14,17 @@ import AddAssistatsModal from './AddAssistantsModal';
 import MoveTaskModal from './MoveTaskModal';
 import Tooltip from '@mui/material/Tooltip';
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
 const Container = styled.div`
+  animation: ${fadeIn} 0.5s ease-in;
   display: flex;
   align-items: center;
   width: 100%;

@@ -8,6 +8,7 @@ import { IconContext } from 'react-icons';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../redux/userReducer';
+import Logo from '../Logo/Logo';
 
 const Header = styled.div`
   background-color: #060b26;

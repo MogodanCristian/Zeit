@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -30,12 +30,21 @@ function formatDate(dateString) {
   return startDate + ', ' + formattedStartTime;
 }
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
 
 const StyledCard = styled(Card)`
   margin: 20px;
   width: 18rem;
   overflow: hidden;
   text-overflow: ellipsis;
+  animation: ${fadeIn} 0.5s ease-in-out;
 `;
 
 const StyledDropdownButton = styled(DropdownButton)`
@@ -71,6 +80,8 @@ const StyledDropdownButton = styled(DropdownButton)`
     }
   }
 `;
+
+
 
 const Exclamation = styled.span`
   color: red;

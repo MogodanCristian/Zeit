@@ -67,6 +67,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         setPriority(response.data[0].priority)
         setDifficulty(response.data[0].difficulty)
         setProgress(response.data[0].progress);
+        console.log(response.data[0].progress)
         if (response.data[0].start_date) {
           setStartDate(response.data[0].start_date.substr(0, 10));
           setStartTime(response.data[0].start_date.slice(11, 16));
@@ -223,7 +224,7 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
         </Form.Group>
         <Form.Group style={{ width: "31%" }}>
           <Form.Label>Progress:</Form.Label>
-          <Form.Select aria-label="Progress" defaultValue={progress} disabled={isAssignedTo === null} onChange={(e) => {
+          <Form.Select aria-label="Progress" value={task[0].progress} disabled={isAssignedTo === null} onChange={(e) => {
             setTask({ ...task, progress: e.target.value })
             setProgress(e.target.value)
             setIsProgressModified(true)
@@ -232,7 +233,9 @@ const TaskDetailsModal = ({show, onHide, _id, handleTaskUpdate, handleCheck, Unc
             <option value="Not Started">Not Started</option>
             <option value="In Progress">In Progress</option>
             <option value="Stuck">Stuck</option>
-            <option value="Done">Done</option>
+            {!previous || (previous && previous[0].progress === 'Done') && (
+              <option value="Done">Done</option>
+            )}
           </Form.Select>
         </Form.Group>
         <Form.Group style={{ width: "31%" }}>
